@@ -5,6 +5,9 @@ import lombok.Data;
 import javax.validation.constraints.*;
 import java.time.LocalDate;
 
+/**
+ * Модель пользователя
+ */
 @Data
 public class User {
     private static int lastId = 1;

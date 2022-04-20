@@ -11,6 +11,9 @@ import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Контроллер для работы с пользователями
+ */
 @RestController
 @RequestMapping("/users")
 @Slf4j

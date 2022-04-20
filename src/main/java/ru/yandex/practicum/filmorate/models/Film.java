@@ -7,6 +7,9 @@ import ru.yandex.practicum.filmorate.validators.ReleaseDate;
 import javax.validation.constraints.*;
 import java.time.LocalDate;
 
+/**
+ * Модель фильма
+ */
 @Data
 public class Film {
     private static int lastId = 1;
