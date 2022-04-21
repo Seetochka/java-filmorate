@@ -8,8 +8,8 @@ import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.models.Film;
 
 import javax.validation.Valid;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Контроллер для работы с фильмами
@@ -18,10 +18,10 @@ import java.util.Map;
 @RequestMapping("/films")
 @Slf4j
 public class FilmController {
-    private Map<Integer, Film> films = new HashMap<>();
+    private Map<Integer, Film> films = new ConcurrentHashMap<>();
 
     @PostMapping
-    public String create(@Valid @RequestBody Film film, BindingResult bindingResult) {
+    public String create(@Valid @RequestBody Film film, BindingResult bindingResult) throws ValidationException {
         if (bindingResult.hasErrors()) {
             String message = String.format("Ошибки валидации: %s", getStringErrors(bindingResult));
 
@@ -37,7 +37,8 @@ public class FilmController {
     }
 
     @PutMapping
-    public String update(@Valid @RequestBody Film film, BindingResult bindingResult) {
+    public String update(@Valid @RequestBody Film film, BindingResult bindingResult)
+            throws ValidationException, ModelNotFoundException {
         if (bindingResult.hasErrors()) {
             String message = String.format("Ошибки валидации: %s", getStringErrors(bindingResult));
 

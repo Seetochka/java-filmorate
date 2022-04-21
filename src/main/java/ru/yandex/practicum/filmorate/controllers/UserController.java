@@ -8,8 +8,8 @@ import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.models.User;
 
 import javax.validation.Valid;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Контроллер для работы с пользователями
@@ -18,10 +18,10 @@ import java.util.Map;
 @RequestMapping("/users")
 @Slf4j
 public class UserController {
-    private Map<Integer, User> users = new HashMap<>();
+    private Map<Integer, User> users = new ConcurrentHashMap<>();
 
     @PostMapping
-    public String create(@Valid @RequestBody User user, BindingResult bindingResult) {
+    public String create(@Valid @RequestBody User user, BindingResult bindingResult) throws ValidationException {
         if (bindingResult.hasErrors()) {
             String message = String.format("Ошибки валидации: %s", getStringErrors(bindingResult));
 
@@ -41,7 +41,8 @@ public class UserController {
     }
 
     @PutMapping
-    public String update(@Valid @RequestBody User user, BindingResult bindingResult) {
+    public String update(@Valid @RequestBody User user, BindingResult bindingResult)
+            throws ValidationException, ModelNotFoundException {
         if (bindingResult.hasErrors()) {
             String message = String.format("Ошибки валидации: %s", getStringErrors(bindingResult));
 
