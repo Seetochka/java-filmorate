@@ -6,34 +6,46 @@ import ru.yandex.practicum.filmorate.validators.ReleaseDate;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Модель фильма
  */
 @Data
 public class Film {
-    private static int lastId = 1;
-
     private int id;
     @NotNull
     @NotBlank
     private String name;
+    @NotNull
+    @NotBlank
     @Length(max = 200)
     private String description;
     @ReleaseDate
     private LocalDate releaseDate;
     @Positive
     private int duration;
+    private Set<Integer> likes = new TreeSet<>();
 
-    public Film(String name, String description, LocalDate releaseDate, int duration) {
-        id = getLastId();
-        this.name = name;
-        this.description = description;
-        this.releaseDate = releaseDate;
-        this.duration = duration;
+    /**
+     * Сохранение лайка пользователя
+     */
+    public void saveLike(int id) {
+        likes.add(id);
     }
 
-    public static int getLastId() {
-        return lastId++;
+    /**
+     * Удаление лайка пользователя
+     */
+    public void deleteLike(int id) {
+        likes.remove(id);
+    }
+
+    /**
+     * Получение количества лайков
+     */
+    public int getCountLikes() {
+        return likes.size();
     }
 }

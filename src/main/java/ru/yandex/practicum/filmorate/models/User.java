@@ -4,14 +4,14 @@ import lombok.Data;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Модель пользователя
  */
 @Data
 public class User {
-    private static int lastId = 1;
-
     private int id;
     @NotNull
     @Email
@@ -21,18 +21,28 @@ public class User {
     private String login;
     private String name;
     @NotNull
-    @Past(groups = LocalDate.class)
+    @Past
     private LocalDate birthday;
+    private Set<Integer> friends = new TreeSet<>();
 
-    public User(String email, String login, String name, LocalDate birthday) {
-        id = getLastId();
-        this.email = email;
-        this.login = login;
-        this.name = name;
-        this.birthday = birthday;
+    /**
+     * Сохранение в друзья
+     */
+    public void saveFriend(int id) {
+        friends.add(id);
     }
 
-    public static int getLastId() {
-        return lastId++;
+    /**
+     * Удаление из друзей
+     */
+    public void deleteFriend(int id) {
+        friends.remove(id);
+    }
+
+    /**
+     * Получение количества друзей
+     */
+    public int getCountFriends() {
+        return friends.size();
     }
 }

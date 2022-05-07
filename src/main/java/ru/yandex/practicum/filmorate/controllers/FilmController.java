@@ -3,13 +3,14 @@ package ru.yandex.practicum.filmorate.controllers;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exceptions.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.exceptions.ModelNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.models.Film;
+import ru.yandex.practicum.filmorate.services.FilmService;
 
 import javax.validation.Valid;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Collection;
 
 /**
  * Контроллер для работы с фильмами
@@ -18,51 +19,78 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequestMapping("/films")
 @Slf4j
 public class FilmController {
-    private Map<Integer, Film> films = new ConcurrentHashMap<>();
+    private final FilmService service;
 
-    @PostMapping
-    public String create(@Valid @RequestBody Film film, BindingResult bindingResult) throws ValidationException {
-        if (bindingResult.hasErrors()) {
-            String message = String.format("Ошибки валидации: %s", getStringErrors(bindingResult));
-
-            log.warn(message);
-            throw new ValidationException(message);
-        }
-
-        films.put(film.getId(), film);
-
-        String message = String.format("Фильм %s успешно добавлен", film.getName());
-        log.info(message);
-        return String.format(message);
+    public FilmController(FilmService service) {
+        this.service = service;
     }
 
-    @PutMapping
-    public String update(@Valid @RequestBody Film film, BindingResult bindingResult)
-            throws ValidationException, ModelNotFoundException {
+    @PostMapping
+    public Film saveFilm(@Valid @RequestBody Film film, BindingResult bindingResult) throws ValidationException {
         if (bindingResult.hasErrors()) {
-            String message = String.format("Ошибки валидации: %s", getStringErrors(bindingResult));
+            String message = getStringErrors(bindingResult);
 
-            log.warn(message);
+            log.warn("SaveFilm. " + message);
             throw new ValidationException(message);
         }
 
-        if (!films.containsKey(film.getId())) {
-            String message = String.format("Не найден фильм с названием %s", film.getName());
+        Film createdFilm = service.saveFilm(film);
 
-            log.warn(message);
-            throw new ModelNotFoundException(message);
-        }
+        log.info(String.format("SaveFilm. Фильм с id %d успешно добавлен", film.getId()));
+        return createdFilm;
+    }
 
-        films.put(film.getId(), film);
-
-        String message = String.format("Фильм %s успешно обновлен", film.getName());
-        log.info(message);
-        return String.format(message);
+    @GetMapping("/{id}")
+    public Film findById(@PathVariable("id") int filmId) throws ModelNotFoundException {
+        return service.findById(filmId);
     }
 
     @GetMapping
-    public Map<Integer, Film> getFilms() {
-        return films;
+    public Collection<Film> findAll() {
+        return service.findAll();
+    }
+
+    @PutMapping
+    public Film updateFilm(@Valid @RequestBody Film film, BindingResult bindingResult)
+            throws ValidationException, ModelNotFoundException {
+        if (bindingResult.hasErrors()) {
+            String message = getStringErrors(bindingResult);
+
+            log.warn("UpdateFilm. " + message);
+            throw new ValidationException(message);
+        }
+
+        Film updatedFilm = service.updateFilm(film);
+
+        log.info(String.format("UpdateFilm. Фильм с id %d успешно обновлен", film.getId()));
+        return updatedFilm;
+    }
+
+    @PutMapping("/{id}/like/{userId}")
+    public int saveLike(@PathVariable("id") int filmId, @PathVariable int userId) throws ModelNotFoundException {
+        int countLikes = service.saveLike(filmId, userId);
+
+        log.info(String.format("SaveLike. Пользователь с id %d добавил лайк фильму с id %d", userId, filmId));
+        return countLikes;
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    public int deleteLike(@PathVariable("id") int filmId, @PathVariable int userId) throws ModelNotFoundException {
+        int countLikes = service.deleteLike(filmId, userId);
+
+        log.info(String.format("DeleteLike. Пользователь с id %d удалил лайк у фильма с id %d", userId, filmId));
+        return countLikes;
+    }
+
+    @GetMapping("/popular")
+    public Collection<Film> findPopularFilms(@RequestParam(defaultValue = "10", required = false) Integer count)
+            throws IncorrectParameterException {
+        if (count <= 0) {
+            log.warn(String.format("FindPopular. Передан неверный параметр count %d", count));
+            throw new IncorrectParameterException("count");
+        }
+
+        return service.findPopularFilms(count);
     }
 
     private String getStringErrors(BindingResult bindingResult) {
