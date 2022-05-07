@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controllers;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -18,25 +19,22 @@ import java.util.Collection;
 @RestController
 @RequestMapping("/films")
 @Slf4j
+@RequiredArgsConstructor
 public class FilmController {
     private final FilmService service;
-
-    public FilmController(FilmService service) {
-        this.service = service;
-    }
 
     @PostMapping
     public Film saveFilm(@Valid @RequestBody Film film, BindingResult bindingResult) throws ValidationException {
         if (bindingResult.hasErrors()) {
             String message = getStringErrors(bindingResult);
 
-            log.warn("SaveFilm. " + message);
+            log.warn("SaveFilm. {}", message);
             throw new ValidationException(message);
         }
 
         Film createdFilm = service.saveFilm(film);
 
-        log.info(String.format("SaveFilm. Фильм с id %d успешно добавлен", film.getId()));
+        log.info("SaveFilm. Фильм с id {} успешно добавлен", film.getId());
         return createdFilm;
     }
 
@@ -62,7 +60,7 @@ public class FilmController {
 
         Film updatedFilm = service.updateFilm(film);
 
-        log.info(String.format("UpdateFilm. Фильм с id %d успешно обновлен", film.getId()));
+        log.info("UpdateFilm. Фильм с id {} успешно обновлен", film.getId());
         return updatedFilm;
     }
 
@@ -70,7 +68,7 @@ public class FilmController {
     public int saveLike(@PathVariable("id") int filmId, @PathVariable int userId) throws ModelNotFoundException {
         int countLikes = service.saveLike(filmId, userId);
 
-        log.info(String.format("SaveLike. Пользователь с id %d добавил лайк фильму с id %d", userId, filmId));
+        log.info("SaveLike. Пользователь с id {} добавил лайк фильму с id {}", userId, filmId);
         return countLikes;
     }
 
@@ -78,18 +76,13 @@ public class FilmController {
     public int deleteLike(@PathVariable("id") int filmId, @PathVariable int userId) throws ModelNotFoundException {
         int countLikes = service.deleteLike(filmId, userId);
 
-        log.info(String.format("DeleteLike. Пользователь с id %d удалил лайк у фильма с id %d", userId, filmId));
+        log.info("DeleteLike. Пользователь с id {} удалил лайк у фильма с id {}", userId, filmId);
         return countLikes;
     }
 
     @GetMapping("/popular")
     public Collection<Film> findPopularFilms(@RequestParam(defaultValue = "10", required = false) Integer count)
             throws IncorrectParameterException {
-        if (count <= 0) {
-            log.warn(String.format("FindPopular. Передан неверный параметр count %d", count));
-            throw new IncorrectParameterException("count");
-        }
-
         return service.findPopularFilms(count);
     }
 

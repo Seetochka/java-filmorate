@@ -40,7 +40,7 @@ public class UserService {
         if (user == null) {
             String message = String.format("Фильм с id %d не найден", id);
 
-            log.warn("FindUserById. " + message);
+            log.warn("FindUserById. {}", message);
             throw new ModelNotFoundException(message);
         }
 

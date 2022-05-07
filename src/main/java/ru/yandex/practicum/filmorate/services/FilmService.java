@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.services;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exceptions.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.exceptions.ModelNotFoundException;
 import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
@@ -38,7 +39,7 @@ public class FilmService {
         if (film == null) {
             String message = String.format("Фильм с id %d не найден", id);
 
-            log.warn("FindFilmById. " + message);
+            log.warn("FindFilmById. {}", message);
             throw new ModelNotFoundException(message);
         }
 
@@ -84,7 +85,12 @@ public class FilmService {
     /**
      * Получение переданного количества популярных фильмов
      */
-    public Collection<Film> findPopularFilms(int count) {
+    public Collection<Film> findPopularFilms(int count) throws IncorrectParameterException {
+        if (count <= 0) {
+            log.warn("FindPopular. Передан неверный параметр count {}", count);
+            throw new IncorrectParameterException("count");
+        }
+
         return storage.findPopularFilms(count);
     }
 }

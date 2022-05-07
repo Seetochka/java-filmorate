@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controllers;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -17,25 +18,22 @@ import java.util.Collection;
 @RestController
 @RequestMapping("/users")
 @Slf4j
+@RequiredArgsConstructor
 public class UserController {
     private final UserService service;
-
-    public UserController(UserService service) {
-        this.service = service;
-    }
 
     @PostMapping
     public User saveUser(@Valid @RequestBody User user, BindingResult bindingResult) throws ValidationException {
         if (bindingResult.hasErrors()) {
             String message = getStringErrors(bindingResult);
 
-            log.warn("SaveUser. " + message);
+            log.warn("SaveUser. {}", message);
             throw new ValidationException(message);
         }
 
         User createdUser = service.saveUser(user);
 
-        log.info(String.format("SaveUser. Пользователь с id %d успешно добавлен", user.getId()));
+        log.info("SaveUser. Пользователь с id {} успешно добавлен", user.getId());
         return createdUser;
     }
 
@@ -55,24 +53,30 @@ public class UserController {
         if (bindingResult.hasErrors()) {
             String message = getStringErrors(bindingResult);
 
-            log.warn("UpdateUser. " + message);
+            log.warn("UpdateUser. {}", message);
             throw new ValidationException(message);
         }
 
         User updatedUser = service.updateUser(user);
 
-        log.info(String.format("UpdateUser. Данные пользователя с id %d успешно обновлены", user.getId()));
+        log.info("UpdateUser. Данные пользователя с id {} успешно обновлены", user.getId());
         return updatedUser;
     }
 
     @PutMapping("/{id}/friends/{friendId}")
     public int saveFriend(@PathVariable("id") int userId, @PathVariable int friendId) throws ModelNotFoundException {
-        return service.saveFriend(userId, friendId);
+        int countFriends = service.saveFriend(userId, friendId);
+
+        log.info("SaveFriend. Пользователь с id {} добавил в друзья пользователя с id {}", userId, friendId);
+        return countFriends;
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
     public int deleteFriend(@PathVariable("id") int userId, @PathVariable int friendId) throws ModelNotFoundException {
-        return service.deleteFriend(userId, friendId);
+        int countFriends = service.deleteFriend(userId, friendId);
+
+        log.info("DeleteFriend. Пользователь с id {} удалил из друзей пользователя с id {}", userId, friendId);
+        return countFriends;
     }
 
     @GetMapping("/{id}/friends")
