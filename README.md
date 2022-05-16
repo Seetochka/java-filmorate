@@ -59,27 +59,27 @@ https://dbdiagram.io/d/6280dc607f945876b61e9962
 
 ![Диаграмма БД](images/diagram.png)
 
-#### users
+#### user
 Таблица пользователей, все поля являются обязательными для заполнения, поле логин и email должны быть уникальными
 
-#### friends
+#### friend
 Таблица друзей, связи пользователей, может быть подтвержденной и не подтвержденной
 
-#### films
+#### film
 Таблица фильмов, все поля являются обязательными для заполнения, для связи с жанрами служит отдельная таблица, рейтинг 
 указывается из типа перечислений film_ratings, чтобы можно было реализовать поиск по названию фильма или описанию 
 добавлены индексы для них
 
-#### likes
+#### like
 Таблица лайков, связь пользователя и фильма
 
-#### genres
+#### genre
 Таблица жанров, поле названия является обязательным для заполнения и должно быть уникальным
 
 #### film_genre
 Таблица связи фильма и жанра
 
-#### film_ratings
+#### film_rating
 Перечесление рейтингов фильмов, в нем перечислены все рейтинги Ассоциации кинокомпаний Америки (англ. Motion Picture
 Association of America)
 
@@ -92,7 +92,7 @@ SELECT id,
         release_date,
         duration,
         rating
-FROM films 
+FROM film
 WHERE id = {id};
 ```
 Получение всех фильмов
@@ -103,7 +103,7 @@ SELECT id,
         release_date,
         duration,
         rating
-FROM films ;
+FROM film;
 ```
 Получение переданного количества популярных фильмов
 ```
@@ -114,8 +114,8 @@ SELECT f.id,
         f.duration,
         f.rating,
         COUNT(l.film_id) AS count_likes
-FROM films f
-LEFT JOIN likes l ON f.id = l.film_id
+FROM film f
+LEFT JOIN like l ON f.id = l.film_id
 GROUP BY l.film_id
 ORDER BY count_likes DESC
 LIMIT {count};
@@ -127,9 +127,9 @@ SELECT u.id,
         u.login,
         u.name,
         u.birthday
-FROM users u
-INNER JOIN friends f1 ON u.id = f1.friend_id
-INNER JOIN friends f2 ON u.id = f2.user_id
+FROM user u
+INNER JOIN friend f1 ON u.id = f1.friend_id
+INNER JOIN friend f2 ON u.id = f2.user_id
 WHERE f.status = 1
         AND (f1.user_id = {id}
         OR f2.friend_id = {id})
@@ -141,14 +141,14 @@ SELECT id,
         login,
         name,
         birthday
-FROM users 
+FROM user 
 WHERE id IN (
         SELECT user_id
-        FROM friends
+        FROM friend
         WHERE friend_id = {id}
         UNION
         SELECT friend_id
-        FROM friends
+        FROM friend
         WHERE user_id = {id}
 )
 ```
@@ -159,25 +159,25 @@ SELECT id,
         login,
         name,
         birthday
-FROM users 
+FROM user
 WHERE id IN (
         (
             SELECT user_id
-            FROM friends
+            FROM friend
             WHERE friend_id = {userId}
             UNION
             SELECT friend_id
-            FROM friends
+            FROM friend
             WHERE user_id = {userId}
         )
         INTERSECT
         (
             SELECT user_id
-            FROM friends
+            FROM friend
             WHERE friend_id = {otherUserId}
             UNION
             SELECT friend_id
-            FROM friends
+            FROM friend
             WHERE user_id = {otherUserId}
         )
 )
