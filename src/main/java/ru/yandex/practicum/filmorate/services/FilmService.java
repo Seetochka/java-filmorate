@@ -38,12 +38,12 @@ public class FilmService {
     public Film findById(int id) throws ModelNotFoundException {
         Optional<Film> film = storage.findById(id);
 
-        if (film.isEmpty()) {
+        film.orElseThrow(() -> {
             String message = String.format("Фильм с id %d не найден", id);
 
             log.warn("FindFilmById. {}", message);
-            throw new ModelNotFoundException(message);
-        }
+            return new ModelNotFoundException(message);
+        });
 
         return film.get();
     }

@@ -39,12 +39,12 @@ public class UserService {
     public User findById(int id) throws ModelNotFoundException {
         Optional<User> user = storage.findById(id);
 
-        if (user.isEmpty()) {
+        user.orElseThrow(() -> {
             String message = String.format("Пользователь с id %d не найден", id);
 
             log.warn("FindUserById. {}", message);
-            throw new ModelNotFoundException(message);
-        }
+            return new ModelNotFoundException(message);
+        });
 
         return user.get();
     }
