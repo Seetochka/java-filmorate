@@ -4,6 +4,7 @@ import ru.yandex.practicum.filmorate.exceptions.ModelNotFoundException;
 import ru.yandex.practicum.filmorate.models.User;
 
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Интерфейс хранилища пользователей
@@ -17,7 +18,7 @@ public interface UserStorage {
     /**
      * Получение пользователя
      */
-    User findById(int id);
+    Optional<User> findById(int id);
 
     /**
      * Получение всех пользователей

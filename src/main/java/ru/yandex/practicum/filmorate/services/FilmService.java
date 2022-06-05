@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Сервис фильмов
@@ -35,16 +36,16 @@ public class FilmService {
      * Получение фильма
      */
     public Film findById(int id) throws ModelNotFoundException {
-        Film film = storage.findById(id);
+        Optional<Film> film = storage.findById(id);
 
-        if (film == null) {
+        if (film.isEmpty()) {
             String message = String.format("Фильм с id %d не найден", id);
 
             log.warn("FindFilmById. {}", message);
             throw new ModelNotFoundException(message);
         }
 
-        return film;
+        return film.get();
     }
 
     /**

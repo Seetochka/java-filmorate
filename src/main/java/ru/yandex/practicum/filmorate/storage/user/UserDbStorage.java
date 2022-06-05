@@ -7,7 +7,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exceptions.ModelNotFoundException;
 import ru.yandex.practicum.filmorate.models.Friend;
 import ru.yandex.practicum.filmorate.models.User;
 
@@ -16,6 +15,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.Optional;
 
 @Component
 @Slf4j
@@ -56,13 +56,15 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public User findById(int id) {
+    public Optional<User> findById(int id) {
         String sqlQuery = "SELECT id, email, login, name, birthday FROM user WHERE id = ?";
 
         try {
-            return jdbcTemplate.queryForObject(sqlQuery, this::mapRowToUser, id);
+            User user = jdbcTemplate.queryForObject(sqlQuery, this::mapRowToUser, id);
+
+            return Optional.ofNullable(user);
         }  catch (EmptyResultDataAccessException e) {
-            throw e;
+            return Optional.empty();
         } catch (Exception e) {
             String message = "Не удалось получить пользователя";
 

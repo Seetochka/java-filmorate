@@ -7,7 +7,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exceptions.ModelNotFoundException;
 import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.models.Mpa;
 
@@ -16,6 +15,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.Optional;
 
 @Component
 @Slf4j
@@ -57,13 +57,15 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Film findById(int id) {
+    public Optional<Film> findById(int id) {
         String sqlQuery = "SELECT id, name, description, release_date, duration, mpa_id FROM film where id = ?";
 
         try {
-            return jdbcTemplate.queryForObject(sqlQuery, this::mapRowToFilm, id);
+            Film film = jdbcTemplate.queryForObject(sqlQuery, this::mapRowToFilm, id);
+
+            return Optional.ofNullable(film);
         } catch (EmptyResultDataAccessException e) {
-            throw e;
+            return Optional.empty();
         } catch (Exception e) {
             String message = "Не удалось получить фильм";
 

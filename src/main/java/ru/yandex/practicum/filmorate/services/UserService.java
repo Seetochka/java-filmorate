@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.models.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Сервис пользователей
@@ -36,14 +37,16 @@ public class UserService {
      * Получение пользователя
      */
     public User findById(int id) throws ModelNotFoundException {
-        try {
-            return storage.findById(id);
-        } catch (Exception e) {
+        Optional<User> user = storage.findById(id);
+
+        if (user.isEmpty()) {
             String message = String.format("Пользователь с id %d не найден", id);
 
             log.warn("FindUserById. {}", message);
             throw new ModelNotFoundException(message);
         }
+
+        return user.get();
     }
 
     /**
