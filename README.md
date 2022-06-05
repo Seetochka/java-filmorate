@@ -79,8 +79,8 @@ https://dbdiagram.io/d/6280dc607f945876b61e9962
 #### film_genre
 Таблица связи фильма и жанра
 
-#### film_rating
-Перечесление рейтингов фильмов, в нем перечислены все рейтинги Ассоциации кинокомпаний Америки (англ. Motion Picture
+#### mpa
+Таблица рейтингов фильмов, в ней перечислены все рейтинги Ассоциации кинокомпаний Америки (англ. Motion Picture
 Association of America)
 
 ### Примеры основных запросов (только на чтение)
@@ -91,7 +91,7 @@ SELECT id,
         description,
         release_date,
         duration,
-        rating
+        mpa_id
 FROM film
 WHERE id = {id};
 ```
@@ -102,7 +102,7 @@ SELECT id,
         description,
         release_date,
         duration,
-        rating
+        mpa_id
 FROM film;
 ```
 Получение переданного количества популярных фильмов
@@ -112,11 +112,11 @@ SELECT f.id,
         f.description,
         f.release_date,
         f.duration,
-        f.rating,
+        f.mpa_id,
         COUNT(l.film_id) AS count_likes
 FROM film f
-LEFT JOIN like l ON f.id = l.film_id
-GROUP BY l.film_id
+LEFT JOIN `like` l ON f.id = l.film_id
+GROUP BY f.id
 ORDER BY count_likes DESC
 LIMIT {count};
 ```
@@ -128,29 +128,9 @@ SELECT u.id,
         u.name,
         u.birthday
 FROM user u
-INNER JOIN friend f1 ON u.id = f1.friend_id
-INNER JOIN friend f2 ON u.id = f2.user_id
-WHERE f.status = 1
-        AND (f1.user_id = {id}
-        OR f2.friend_id = {id})
-```
-ИЛИ
-```
-SELECT id,
-        email,
-        login,
-        name,
-        birthday
-FROM user 
-WHERE id IN (
-        SELECT user_id
-        FROM friend
-        WHERE friend_id = {id}
-        UNION
-        SELECT friend_id
-        FROM friend
-        WHERE user_id = {id}
-)
+JOIN friend f ON u.id = f.friend_id
+WHERE (user_id = {id})
+OR (friend_id = {id} AND status = 1)
 ```
 Получение друзей, общих с другим пользователем
 ```
@@ -182,4 +162,3 @@ WHERE id IN (
         )
 )
 ```
-Примечание: запросы написаны без преверки на реальной БД и могут быть доработаны или переделаны в несколько запросов
