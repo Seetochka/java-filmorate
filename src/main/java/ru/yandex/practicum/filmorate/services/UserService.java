@@ -1,12 +1,14 @@
 package ru.yandex.practicum.filmorate.services;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.ModelNotFoundException;
 import ru.yandex.practicum.filmorate.models.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Сервис пользователей
@@ -16,7 +18,7 @@ import java.util.Collection;
 public class UserService {
     private final UserStorage storage;
 
-    public UserService(UserStorage storage) {
+    public UserService(@Qualifier("userDbStorage") UserStorage storage) {
         this.storage = storage;
     }
 
@@ -35,16 +37,16 @@ public class UserService {
      * Получение пользователя
      */
     public User findById(int id) throws ModelNotFoundException {
-        User user = storage.findById(id);
+        Optional<User> user = storage.findById(id);
 
-        if (user == null) {
-            String message = String.format("Фильм с id %d не найден", id);
+        user.orElseThrow(() -> {
+            String message = String.format("Пользователь с id %d не найден", id);
 
             log.warn("FindUserById. {}", message);
-            throw new ModelNotFoundException(message);
-        }
+            return new ModelNotFoundException(message);
+        });
 
-        return user;
+        return user.get();
     }
 
     /**

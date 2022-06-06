@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.services;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.exceptions.ModelNotFoundException;
@@ -8,6 +9,7 @@ import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Сервис фильмов
@@ -18,7 +20,7 @@ public class FilmService {
     private final FilmStorage storage;
     private final UserService userService;
 
-    public FilmService(FilmStorage storage, UserService userService) {
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage storage, UserService userService) {
         this.storage = storage;
         this.userService = userService;
     }
@@ -34,16 +36,16 @@ public class FilmService {
      * Получение фильма
      */
     public Film findById(int id) throws ModelNotFoundException {
-        Film film = storage.findById(id);
+        Optional<Film> film = storage.findById(id);
 
-        if (film == null) {
+        film.orElseThrow(() -> {
             String message = String.format("Фильм с id %d не найден", id);
 
             log.warn("FindFilmById. {}", message);
-            throw new ModelNotFoundException(message);
-        }
+            return new ModelNotFoundException(message);
+        });
 
-        return film;
+        return film.get();
     }
 
     /**

@@ -1,5 +1,7 @@
 package ru.yandex.practicum.filmorate.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Builder;
 import lombok.Data;
 
 import javax.validation.constraints.*;
@@ -11,6 +13,7 @@ import java.util.TreeSet;
  * Модель пользователя
  */
 @Data
+@Builder
 public class User {
     private int id;
     @NotNull
@@ -23,6 +26,7 @@ public class User {
     @NotNull
     @Past
     private LocalDate birthday;
+    @JsonIgnore
     private Set<Integer> friends = new TreeSet<>();
 
     /**
@@ -42,6 +46,7 @@ public class User {
     /**
      * Получение количества друзей
      */
+    @JsonIgnore
     public int getCountFriends() {
         return friends.size();
     }

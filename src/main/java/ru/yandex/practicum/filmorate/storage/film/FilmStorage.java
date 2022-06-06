@@ -1,8 +1,10 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
+import ru.yandex.practicum.filmorate.exceptions.ModelNotFoundException;
 import ru.yandex.practicum.filmorate.models.Film;
 
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Интерфейс хранилища фильмов
@@ -16,7 +18,7 @@ public interface FilmStorage {
     /**
      * Получение фильма
      */
-    Film findById(int id);
+    Optional<Film> findById(int id);
 
     /**
      * Получение всех фильмов

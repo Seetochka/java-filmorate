@@ -5,6 +5,7 @@ import ru.yandex.practicum.filmorate.models.User;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -33,8 +34,8 @@ public class InMemoryUserStorage implements UserStorage {
      * Получение пользователя
      */
     @Override
-    public User findById(int id) {
-        return users.get(id);
+    public Optional<User> findById(int id) {
+        return Optional.ofNullable(users.get(id));
     }
 
     /**
