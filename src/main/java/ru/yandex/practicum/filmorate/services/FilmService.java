@@ -49,6 +49,15 @@ public class FilmService {
     }
 
     /**
+     * Удаление фильма
+     */
+    public void deleteFilm(int id) throws ModelNotFoundException {
+        findById(id);
+
+        storage.deleteFilm(id);
+    }
+
+    /**
      * Получение всех фильмов
      */
     public Collection<Film> findAll() {
