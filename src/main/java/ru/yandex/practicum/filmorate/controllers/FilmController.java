@@ -48,6 +48,11 @@ public class FilmController {
         return service.findAll();
     }
 
+    @DeleteMapping("/{id}")
+    public void deleteFilm(@PathVariable("id") int filmId) throws ModelNotFoundException {
+        service.deleteFilm(filmId);
+    }
+
     @PutMapping
     public Film updateFilm(@Valid @RequestBody Film film, BindingResult bindingResult)
             throws ValidationException, ModelNotFoundException {

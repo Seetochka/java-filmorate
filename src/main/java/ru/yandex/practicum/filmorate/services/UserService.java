@@ -50,6 +50,16 @@ public class UserService {
     }
 
     /**
+     * Удаление пользователя
+     */
+    public void deleteUser(int id) throws ModelNotFoundException {
+        findById(id);
+
+        storage.deleteUser(id);
+    }
+
+
+    /**
      * Получение всех пользователей
      */
     public Collection<User> findAll() {

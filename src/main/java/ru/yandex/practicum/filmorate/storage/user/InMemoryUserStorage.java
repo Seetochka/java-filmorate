@@ -38,6 +38,11 @@ public class InMemoryUserStorage implements UserStorage {
         return Optional.ofNullable(users.get(id));
     }
 
+    @Override
+    public void deleteUser(int id) {
+        users.remove(id);
+    }
+
     /**
      * Получение всех пользователей
      */

@@ -21,6 +21,11 @@ public interface UserStorage {
     Optional<User> findById(int id);
 
     /**
+     * Удаление пользователя
+     */
+    void deleteUser(int id);
+
+    /**
      * Получение всех пользователей
      */
     Collection<User> findAll();

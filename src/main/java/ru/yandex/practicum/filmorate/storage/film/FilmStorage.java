@@ -16,6 +16,11 @@ public interface FilmStorage {
     Film saveFilm(Film film);
 
     /**
+     * Удаление фильма
+     */
+    void deleteFilm(int id);
+
+    /**
      * Получение фильма
      */
     Optional<Film> findById(int id);

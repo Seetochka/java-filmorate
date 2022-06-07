@@ -59,7 +59,6 @@ public class UserDbStorage implements UserStorage {
 
         try {
             User user = jdbcTemplate.queryForObject(sqlQuery, this::mapRowToUser, id);
-
             return Optional.ofNullable(user);
         }  catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -69,6 +68,12 @@ public class UserDbStorage implements UserStorage {
             log.error("FindUserById. {}", message);
             throw new RuntimeException(message);
         }
+    }
+
+    @Override
+    public void deleteUser(int id) {
+        String sqlQuery ="DELETE FROM user WHERE id = ?";
+        jdbcTemplate.update(sqlQuery, id);
     }
 
     @Override
