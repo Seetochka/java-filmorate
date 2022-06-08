@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.models.Mpa;
+import ru.yandex.practicum.filmorate.storage.mpa.MpaDbStorage;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -20,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 class FilmDbStorageTest {
     private final FilmDbStorage filmStorage;
+    private final MpaDbStorage mpaStorage;
 
     @Test
     void testSaveFilm() {
@@ -32,6 +34,10 @@ class FilmDbStorageTest {
                 .build();
 
         film = filmStorage.saveFilm(film);
+        Optional<Mpa> mpaOptional = mpaStorage.findById(2);
+        assertThat(mpaOptional).isPresent();
+        film.setMpa(mpaOptional.get());
+
         Optional<Film> filmOptional = filmStorage.findById(film.getId());
 
         assertThat(filmOptional).isPresent();
