@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage.film;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -9,6 +10,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.models.Film;
+import ru.yandex.practicum.filmorate.models.Genre;
 import ru.yandex.practicum.filmorate.models.Mpa;
 
 import java.sql.PreparedStatement;
@@ -44,6 +46,12 @@ public class FilmDbStorage implements FilmStorage {
             film.setId(
                     Objects.requireNonNull(keyHolder.getKey()).intValue()
             );
+
+            if (film.getGenres() != null) {
+                saveFilmGenre(film.getId(), film.getGenres());
+
+                film.setGenres(findGenresByFilmId(film.getId()));
+            }
         } catch (Exception e) {
             String message = "Не удалось сохранить фильм";
 
@@ -56,7 +64,11 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Optional<Film> findById(int id) {
-        String sqlQuery = "SELECT id, name, description, release_date, duration, mpa_id FROM film where id = ?";
+        String sqlQuery = "SELECT f.id, f.name as film_name, f.description, f.release_date, " +
+                "f.duration, f.mpa_id, m.name as mpa_name " +
+                "FROM film f " +
+                "LEFT JOIN mpa m ON f.mpa_id = m.id " +
+                "WHERE f.id = ?";
 
         try {
             Film film = jdbcTemplate.queryForObject(sqlQuery, this::mapRowToFilm, id);
@@ -74,7 +86,10 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Collection<Film> findAll() {
-        String sqlQuery = "SELECT id, name, description, release_date, duration, mpa_id FROM film";
+        String sqlQuery = "SELECT f.id, f.name as film_name, f.description, f.release_date, " +
+                "f.duration, f.mpa_id, m.name as mpa_name " +
+                "FROM film f " +
+                "LEFT JOIN mpa m ON f.mpa_id = m.id";
 
         try {
             return jdbcTemplate.query(sqlQuery, this::mapRowToFilm);
@@ -101,6 +116,16 @@ public class FilmDbStorage implements FilmStorage {
                     film.getDuration(),
                     film.getMpa().getId(),
                     film.getId());
+
+            if (film.getGenres() != null) {
+                if (findCountGenreForFilm(film.getId()) > 0) {
+                    deleteFilmGenres(film.getId());
+                }
+
+                saveFilmGenre(film.getId(), film.getGenres());
+
+                film.setGenres(findGenresByFilmId(film.getId()));
+            }
         } catch (Exception e) {
             String message = "Не удалось обновить данные фильма";
 
@@ -145,9 +170,10 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Collection<Film> findPopularFilms(int count) {
-        String sqlQuery = "SELECT f.id, f.name, f.description, f.release_date, f.duration, f.mpa_id, " +
-                "COUNT(l.film_id) AS count_likes " +
+        String sqlQuery = "SELECT f.id, f.name as film_name, f.description, f.release_date, f.duration, " +
+                "f.mpa_id, m.name as mpa_name, COUNT(l.film_id) AS count_likes " +
                 "FROM film f " +
+                "LEFT JOIN mpa m ON f.mpa_id = m.id " +
                 "LEFT JOIN `like` l ON f.id = l.film_id " +
                 "GROUP BY f.id " +
                 "ORDER BY count_likes DESC " +
@@ -186,16 +212,101 @@ public class FilmDbStorage implements FilmStorage {
         }
     }
 
-    private Film mapRowToFilm(ResultSet resultSet, int i) throws SQLException {
-        Mpa mpa = Mpa.builder().id(resultSet.getInt("mpa_id")).build();
+    private void saveFilmGenre(int filmId, Collection<Genre> genres) {
+        String sqlQuery = "INSERT INTO film_genre (film_id, genre_id) VALUES (?, ?)";
 
+        for (Genre genre : genres) {
+            try {
+                jdbcTemplate.update(sqlQuery, filmId, genre.getId());
+            } catch (DuplicateKeyException e) {
+                continue;
+            } catch (Exception e) {
+                String message = "Не удалось сохранить привязку жанра к фильму";
+
+                log.error("SaveFilmGenre. {}", message);
+                throw new RuntimeException(message);
+            }
+        }
+    }
+
+    private void deleteFilmGenres(int filmId) {
+        String sqlQuery = "DELETE FROM film_genre WHERE film_id = ?";
+
+        try {
+            jdbcTemplate.update(sqlQuery, filmId);
+
+        } catch (Exception e) {
+            String message = "Не удалось удалить привязки жанров к фильму";
+
+            log.error("DeleteFilmGenres. {}", message);
+            throw new RuntimeException(message);
+        }
+    }
+
+    private Collection<Genre> findGenresByFilmId(int filmId) {
+        String sqlQuery = "SELECT g.id, g.name " +
+                "FROM genre g " +
+                "INNER JOIN film_genre fg ON g.id = fg.genre_id " +
+                "WHERE fg.film_id = ?";
+
+        try {
+            return jdbcTemplate.query(sqlQuery, this::mapRowToGenre, filmId);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        } catch (Exception e) {
+            String message = "Не удалось получить список жанров фильма";
+
+            log.error("FindGenresByFilmId. {}", message);
+            throw new RuntimeException(message);
+        }
+    }
+
+    private int findCountGenreForFilm(int filmId) {
+        String sqlQuery = "SELECT COUNT(genre_id) as countGenres FROM film_genre WHERE film_id = ?";
+
+        try {
+            SqlRowSet countRows =  jdbcTemplate.queryForRowSet(sqlQuery, filmId);
+
+            if (countRows.next()) {
+                return countRows.getInt("countGenres");
+            }
+
+            return 0;
+        } catch (EmptyResultDataAccessException e) {
+            return 0;
+        } catch (Exception e) {
+            String message = "Не удалось посчитать количество жанров фильма";
+
+            log.error("FindCountGenreForFilm. {}", message);
+            throw new RuntimeException(message);
+        }
+    }
+
+    private Film mapRowToFilm(ResultSet resultSet, int i) throws SQLException {
+        Mpa mpa = Mpa.builder()
+                .id(resultSet.getInt("mpa_id"))
+                .name(resultSet.getString("mpa_name"))
+                .build();
+
+
+        Collection<Genre> genres = findGenresByFilmId(resultSet.getInt("id"));
+        if (genres != null && genres.isEmpty()) genres = null;
+        
         return Film.builder()
                 .id(resultSet.getInt("id"))
-                .name(resultSet.getString("name"))
+                .name(resultSet.getString("film_name"))
                 .description(resultSet.getString("description"))
                 .releaseDate(resultSet.getDate("release_date").toLocalDate())
                 .duration(resultSet.getInt("duration"))
                 .mpa(mpa)
+                .genres(genres)
+                .build();
+    }
+
+    private Genre mapRowToGenre(ResultSet resultSet, int i) throws SQLException {
+        return Genre.builder()
+                .id(resultSet.getInt("id"))
+                .name(resultSet.getString("name"))
                 .build();
     }
 }
