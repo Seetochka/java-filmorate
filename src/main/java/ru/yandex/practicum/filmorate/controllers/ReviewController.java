@@ -7,9 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exceptions.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.exceptions.ModelNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
-import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.models.Review;
-import ru.yandex.practicum.filmorate.services.FilmService;
 import ru.yandex.practicum.filmorate.services.ReviewService;
 
 import javax.validation.Valid;
@@ -76,6 +74,30 @@ public class ReviewController {
     @DeleteMapping("/{id}")
     public void deleteReview(@PathVariable("id") int reviewID) throws ModelNotFoundException {
         service.deleteFilm(reviewID);
+    }
+
+    @PutMapping("/{id}/like/{userId}")
+    public void putLikeReview(@PathVariable("id") int reviewID, @PathVariable("userId") int userId)
+            throws ModelNotFoundException {
+        service.putLikeReview(reviewID, userId);
+    }
+
+    @PutMapping("/{id}/dislike/{userId}")
+    public void putDislikeReview(@PathVariable("id") int reviewID, @PathVariable("userId") int userId)
+            throws ModelNotFoundException {
+        service.putDislikeReview(reviewID, userId);
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    public void deleteLikeReview(@PathVariable("id") int reviewID, @PathVariable("userId") int userId)
+            throws ModelNotFoundException {
+        service.deleteLikeReview(reviewID, userId);
+    }
+
+    @DeleteMapping("/{id}/dislike/{userId}")
+    public void deleteDislikeReview(@PathVariable("id") int reviewID, @PathVariable("userId") int userId)
+            throws ModelNotFoundException {
+        service.deleteDislikeReview(reviewID, userId);
     }
 
     private String getStringErrors(BindingResult bindingResult) {

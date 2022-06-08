@@ -70,9 +70,19 @@ CREATE TABLE IF NOT EXISTS `review`
     is_positive boolean                        NOT NULL,
     user_id     int                            NOT NULL,
     film_id     int                            NOT NULL,
-    useful      int                            NOT NULL DEFAULT (0),
-    created_at  timestamp                               DEFAULT (now()),
-    updated_at  timestamp                               DEFAULT (now())
+    useful      int       DEFAULT (0),
+    created_at  timestamp DEFAULT (now()),
+    updated_at  timestamp DEFAULT (now())
+);
+
+CREATE TABLE IF NOT EXISTS `like_review`
+(
+    review_id  int     NOT NULL,
+    user_id    int     NOT NULL,
+    is_like    boolean NOT NULL,
+    created_at timestamp DEFAULT (now()),
+    updated_at timestamp DEFAULT (now()),
+    PRIMARY KEY (user_id, review_id)
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS user_index_email ON `user` (email);
@@ -107,3 +117,9 @@ ALTER TABLE IF EXISTS review
 
 ALTER TABLE IF EXISTS review
     ADD FOREIGN KEY (film_id) REFERENCES `film` (id);
+
+ALTER TABLE IF EXISTS like_review
+    ADD FOREIGN KEY (review_id) REFERENCES `review` (id) ON DELETE CASCADE;
+
+ALTER TABLE IF EXISTS like_review
+    ADD FOREIGN KEY (user_id) REFERENCES `user` (id) ON DELETE CASCADE;

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.exceptions.ModelNotFoundException;
 import ru.yandex.practicum.filmorate.models.Review;
+import ru.yandex.practicum.filmorate.storage.LikeReview.LikeReviewStorage;
 import ru.yandex.practicum.filmorate.storage.rewie.ReviewStorage;
 
 import java.util.Collection;
@@ -19,10 +20,17 @@ import java.util.Optional;
 public class ReviewService {
     private final ReviewStorage storage;
     private final FilmService filmService;
+    private final LikeReviewStorage likeReviewStorage;
 
-    public ReviewService(ReviewStorage storage, FilmService filmService) {
+    private final UserService userService;
+
+    public ReviewService(ReviewStorage storage, FilmService filmService,
+                         LikeReviewStorage likeReviewStorage, UserService userService) {
+
         this.storage = storage;
         this.filmService = filmService;
+        this.likeReviewStorage = likeReviewStorage;
+        this.userService = userService;
     }
 
     /**
@@ -56,7 +64,7 @@ public class ReviewService {
             throw new IncorrectParameterException("count");
         }
 
-        if(id.isPresent()) {
+        if (id.isPresent()) {
             filmService.findById(id.get());
             return storage.findByFilmId(id.get(), count);
         }
@@ -82,5 +90,88 @@ public class ReviewService {
         storage.deleteReview(id);
     }
 
+    /**
+     * Поставить лайк отзыву
+     */
+    public void putLikeReview(int reviewId, int userId) throws ModelNotFoundException {
+        Optional<Boolean> status = likeReviewStorage.getStatus(reviewId, userId);
+
+        Review review = findById(reviewId);
+        userService.findById(userId);
+
+        if (status.isPresent()) {
+            if(!status.get()) {
+                likeReviewStorage.update(reviewId, userId, true);
+                review.setUseful(review.getUseful() + 2);
+            }
+        } else {
+            likeReviewStorage.put(reviewId, userId, true);
+            review.setUseful(review.getUseful() + 1);
+        }
+        storage.updateReview(review);
+    }
+
+    /**
+     * Поставить дизлайк отзыву
+     */
+    public void putDislikeReview(int reviewId, int userId) throws ModelNotFoundException {
+        Review review = findById(reviewId);
+        userService.findById(userId);
+
+        Optional<Boolean> status = likeReviewStorage.getStatus(reviewId, userId);
+        if (status.isPresent()) {
+            if(status.get()) {
+                likeReviewStorage.update(reviewId, userId, false);
+                review.setUseful(review.getUseful() - 2);
+            }
+        } else {
+            likeReviewStorage.put(reviewId, userId, false);
+            review.setUseful(review.getUseful() - 1);
+        }
+        storage.updateReview(review);
+    }
+
+    /**
+     * Удалить лайк отзыву
+     */
+    public void deleteLikeReview(int reviewId, int userId) throws ModelNotFoundException {
+        Review review = findById(reviewId);
+        userService.findById(userId);
+
+        Optional<Boolean> status = likeReviewStorage.getStatus(reviewId, userId);
+        if (status.isPresent()) {
+            if(status.get()) {
+                likeReviewStorage.delete(reviewId, userId);
+                review.setUseful(review.getUseful() - 1);
+            }
+        } else {
+            String message = "Лайк не существует";
+
+            log.error("DeleteLikeReview. {}", message);
+            throw new ModelNotFoundException(message);
+        }
+        storage.updateReview(review);
+    }
+
+    /**
+     * Удалить дизлайк отзыву
+     */
+    public void deleteDislikeReview(int reviewId, int userId) throws ModelNotFoundException {
+        Review review = findById(reviewId);
+        userService.findById(userId);
+
+        Optional<Boolean> status = likeReviewStorage.getStatus(reviewId, userId);
+        if (status.isPresent()) {
+            if(!status.get()) {
+                likeReviewStorage.delete(reviewId, userId);
+                review.setUseful(review.getUseful() + 1);
+            }
+        } else {
+            String message = "Дизлайк не существует";
+            log.error("DeleteLikeReview. {}", message);
+            throw new ModelNotFoundException(message);
+        }
+        storage.updateReview(review);
+    }
 }
 
