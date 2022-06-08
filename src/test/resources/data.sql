@@ -1,5 +1,7 @@
 INSERT INTO mpa (name) VALUES ('G'), ('PG'), ('PG-13'), ('R'), ('NC-17');
 
+INSERT INTO `genre` (name) VALUES ('Комедия'), ('Драма'), ('Мультфильм'), ('Триллер'), ('Документальный'), ('Боевик');
+
 INSERT INTO user (email, login, name, birthday) VALUES ('mail@mail.ru', 'dolore', 'Nick Name', '1946-08-20');
 INSERT INTO user (email, login, name, birthday) VALUES ('email@email.ru', 'ipsum', 'Name Nick', '1976-12-24');
 INSERT INTO user (email, login, name, birthday) VALUES ('testemail@email.ru', 'regut', 'Tom Smith', '1996-12-24');
