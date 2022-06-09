@@ -80,6 +80,8 @@ CREATE UNIQUE INDEX IF NOT EXISTS user_index_email ON `user` (email);
 
 CREATE UNIQUE INDEX IF NOT EXISTS user_index_login ON `user` (login);
 
+CREATE UNIQUE INDEX IF NOT EXISTS mpa_index_name ON `mpa` (name);
+
 CREATE UNIQUE INDEX IF NOT EXISTS genre_index_name ON `genre` (name);
 
 ALTER TABLE IF EXISTS `film`
