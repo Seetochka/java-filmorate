@@ -20,7 +20,7 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
 
-@Component
+@Component("FilmDbStorage")
 @Slf4j
 @RequiredArgsConstructor
 public class FilmDbStorage implements FilmStorage {

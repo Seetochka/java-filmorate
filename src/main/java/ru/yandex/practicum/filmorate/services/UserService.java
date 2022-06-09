@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.ModelNotFoundException;
 import ru.yandex.practicum.filmorate.models.User;
+import ru.yandex.practicum.filmorate.storage.event.EventDBStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Collection;
@@ -17,9 +18,12 @@ import java.util.Optional;
 @Slf4j
 public class UserService {
     private final UserStorage storage;
+    private final EventDBStorage eventStorage;
 
-    public UserService(@Qualifier("userDbStorage") UserStorage storage) {
+    public UserService(@Qualifier("UserDbStorage") UserStorage storage,
+                       @Qualifier("EventDBStorage") EventDBStorage eventStorage) {
         this.storage = storage;
+        this.eventStorage = eventStorage;
     }
 
     /**
@@ -71,8 +75,9 @@ public class UserService {
     public int saveFriend(int userId, int friendId) throws ModelNotFoundException {
         findById(userId);
         findById(friendId);
-
-        return storage.saveFriend(userId, friendId);
+        int ret = storage.saveFriend(userId, friendId);
+        eventStorage.log(userId, "FRIEND", "ADD", friendId);
+        return ret;
     }
 
     /**
@@ -81,8 +86,9 @@ public class UserService {
     public int deleteFriend(int userId, int friendId) throws ModelNotFoundException {
         findById(userId);
         findById(friendId);
-
-        return storage.deleteFriend(userId, friendId);
+        int ret = storage.deleteFriend(userId, friendId);
+        eventStorage.log(userId, "FRIEND", "REMOVE", friendId);
+        return ret;
     }
 
     /**
