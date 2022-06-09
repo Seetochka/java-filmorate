@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.LikeReview;
+package ru.yandex.practicum.filmorate.storage.likeReview;
 
 import java.util.Optional;
 

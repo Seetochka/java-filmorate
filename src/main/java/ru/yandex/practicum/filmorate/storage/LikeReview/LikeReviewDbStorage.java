@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.LikeReview;
+package ru.yandex.practicum.filmorate.storage.likeReview;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +12,7 @@ import java.util.Optional;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class LikeReviewDbStorage implements LikeReviewStorage{
+public class LikeReviewDbStorage implements LikeReviewStorage {
 
     private final JdbcTemplate jdbcTemplate;
 
