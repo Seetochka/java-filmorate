@@ -9,3 +9,6 @@ INSERT INTO film (name, description, release_date, duration, mpa_id) VALUES ('fi
 INSERT INTO film (name, description, release_date, duration, mpa_id) VALUES ('road', 'brick', '2015-09-24', 147, 4);
 
 INSERT INTO `like` (user_id, film_id) VALUES (2, 2);
+
+INSERT INTO review (content, is_positive, user_id, film_id)
+VALUES ('So good', true, 1, 1), ('So bad',false, 2, 1), ('So bad',false, 1, 2);

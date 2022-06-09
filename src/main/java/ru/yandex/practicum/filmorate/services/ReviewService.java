@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.exceptions.ModelNotFoundException;
 import ru.yandex.practicum.filmorate.models.Review;
-import ru.yandex.practicum.filmorate.storage.LikeReview.LikeReviewStorage;
+import ru.yandex.practicum.filmorate.storage.likeReview.LikeReviewStorage;
 import ru.yandex.practicum.filmorate.storage.rewie.ReviewStorage;
 
 import java.util.Collection;
