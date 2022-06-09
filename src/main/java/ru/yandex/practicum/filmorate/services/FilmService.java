@@ -3,12 +3,15 @@ package ru.yandex.practicum.filmorate.services;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import ru.yandex.practicum.filmorate.exceptions.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.exceptions.ModelNotFoundException;
 import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -94,5 +97,17 @@ public class FilmService {
         }
 
         return storage.findPopularFilms(count);
+    }
+
+    // поиск фильма по содержащейся строке в названии фильма
+    public List<Film> searchFilmsByTitle(String query, String by) {
+        return storage.searchFilmsByTitle(query, by);
+
+    }
+
+    // получение списка фильмов по id режиссёра
+    public List<Film> getFilmsByDirector(long directorId, String sortBy) {
+        return storage.getFilmsByDirector(directorId, sortBy);
+
     }
 }

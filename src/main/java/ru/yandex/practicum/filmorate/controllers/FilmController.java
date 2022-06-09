@@ -12,6 +12,7 @@ import ru.yandex.practicum.filmorate.services.FilmService;
 
 import javax.validation.Valid;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Контроллер для работы с фильмами
@@ -84,6 +85,26 @@ public class FilmController {
     public Collection<Film> findPopularFilms(@RequestParam(defaultValue = "10", required = false) Integer count)
             throws IncorrectParameterException {
         return service.findPopularFilms(count);
+    }
+
+
+    @GetMapping("/search")
+    @ResponseBody
+    public List<Film> searchFilmsByTitle(@RequestParam(required = false) String query, @RequestParam(required = false) String by) {
+        return service.searchFilmsByTitle(query, by);
+    }
+
+    //Возвращает список фильмов режиссера отсортированных по количеству лайков или/и году выпуска
+    @GetMapping(value = {"/director/{directorId}?sortBy=year,likes", "/director/{directorId}?sortBy=likes", "/director/{directorId}?sortBy=year"})
+    public List<Film> getFilmsByDirector(@PathVariable(required = false) String directorId, @RequestParam(required = false) String sortBy)
+            throws IncorrectParameterException {
+        try {
+            return service.getFilmsByDirector(Long.parseLong(directorId), sortBy);
+        } catch (NumberFormatException e) {
+            String message = "Не удалось получить режиссёра по id";
+            log.warn("getFilmsByDirector. {}", message);
+            throw new RuntimeException(message);
+        }
     }
 
     private String getStringErrors(BindingResult bindingResult) {

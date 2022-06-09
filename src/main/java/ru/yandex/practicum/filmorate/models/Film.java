@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.validators.ReleaseDate;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -33,6 +34,8 @@ public class Film {
     private Mpa mpa;
     @JsonIgnore
     private Set<Integer> likes = new TreeSet<>();
+    @NotNull
+    private List<Director> directors;
 
     /**
      * Сохранение лайка пользователя
