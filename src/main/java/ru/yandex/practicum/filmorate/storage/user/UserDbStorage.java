@@ -28,7 +28,7 @@ public class UserDbStorage implements UserStorage {
     public User saveUser(User user) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
-        String sqlQuery = "INSERT INTO user (email, login, name, birthday) VALUES (?, ?, ?, ?)";
+        String sqlQuery = "INSERT INTO `user` (email, login, name, birthday) VALUES (?, ?, ?, ?)";
 
         try {
             jdbcTemplate.update(connection -> {
@@ -55,7 +55,7 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public Optional<User> findById(int id) {
-        String sqlQuery = "SELECT id, email, login, name, birthday FROM user WHERE id = ?";
+        String sqlQuery = "SELECT id, email, login, name, birthday FROM `user` WHERE id = ?";
 
         try {
             User user = jdbcTemplate.queryForObject(sqlQuery, this::mapRowToUser, id);
@@ -73,7 +73,7 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public Collection<User> findAll() {
-        String sqlQuery = "SELECT id, email, login, name, birthday FROM user";
+        String sqlQuery = "SELECT id, email, login, name, birthday FROM `user`";
 
         try {
             return jdbcTemplate.query(sqlQuery, this::mapRowToUser);
@@ -89,7 +89,7 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User updateUser(User user) {
-        String sqlQuery = "UPDATE user SET email = ?, login = ?, name = ?, birthday = ? WHERE id = ?";
+        String sqlQuery = "UPDATE `user` SET email = ?, login = ?, name = ?, birthday = ? WHERE id = ?";
 
         try {
             jdbcTemplate.update(sqlQuery,
@@ -147,7 +147,7 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public Collection<User> findFriends(int userId) {
-        String sqlQuery = "SELECT u.id, u.email, u.login, u.name, u.birthday FROM user u " +
+        String sqlQuery = "SELECT u.id, u.email, u.login, u.name, u.birthday FROM `user` u " +
                 "JOIN friend f ON u.id = f.friend_id " +
                 "WHERE (user_id = ?) OR (friend_id = ? AND status = 1)";
 
@@ -165,7 +165,7 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public Collection<User> findCommonFriends(int userId, int otherUserId) {
-        String sqlQuery = "SELECT id, email, login,  name,  birthday FROM user " +
+        String sqlQuery = "SELECT id, email, login,  name,  birthday FROM `user` " +
                 "WHERE id IN (" +
                 "(SELECT user_id FROM friend  WHERE (friend_id = ? AND status = 1) " +
                 "UNION SELECT friend_id FROM friend WHERE user_id = ?) " +

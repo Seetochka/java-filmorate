@@ -86,6 +86,12 @@ public class FilmController {
         return service.findPopularFilms(count);
     }
 
+    //?userId={userId}&friendId={friendId}
+    @GetMapping("/common")
+    public Collection<Film> getCommonFilms(@RequestParam int userId, @RequestParam int friendId) {
+        return service.getCommonFilms(userId, friendId);
+    }
+
     private String getStringErrors(BindingResult bindingResult) {
         return bindingResult.getFieldErrors()
                 .stream()

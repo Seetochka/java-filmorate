@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.models.Mpa;
+import ru.yandex.practicum.filmorate.models.User;
 import ru.yandex.practicum.filmorate.storage.mpa.MpaDbStorage;
 
 import java.time.LocalDate;
@@ -125,5 +126,16 @@ class FilmDbStorageTest {
 
         assertThat(popularFilms).hasSize(2);
         assertThat(popularFilms).isEqualTo(List.of(filmOptional1.get(), filmOptional2.get()));
+    }
+
+    @Test
+    void testFindCommonFilms() {
+        //filmStorage.getCommonFilms(2, 1);
+
+        Collection<Film> commonFilms = filmStorage.getCommonFilms(1,2);
+        //Collection<User> commonFilms = filmStorage.findCommonFriends(1, 2);
+
+        assertThat(commonFilms).hasSize(1);
+        assertThat(filmStorage.findById(2)).isEqualTo(2);
     }
 }
