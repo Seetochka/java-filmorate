@@ -13,6 +13,7 @@ import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.storage.director.DirectorDbStorage;
 
 import java.sql.PreparedStatement;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,7 +44,7 @@ public class DirectorService {
     }
 
     // получение списка всех режиссёров
-    public List<Director> getAllDirectors() {
+    public Collection<Director> getAllDirectors() {
        return directorDbStorage.getAllDirectors();
 
     }

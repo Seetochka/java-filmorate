@@ -90,19 +90,28 @@ public class FilmController {
 
     @GetMapping("/search")
     @ResponseBody
-    public List<Film> searchFilmsByTitle(@RequestParam(required = false) String query, @RequestParam(required = false) String by) {
+    public Collection<Film> searchFilmsByTitleAndDirector(@RequestParam(required = false) String query,
+                                                          @RequestParam String by)
+            throws IncorrectParameterException {
         return service.searchFilmsByTitle(query, by);
     }
 
     //Возвращает список фильмов режиссера отсортированных по количеству лайков или/и году выпуска
-    @GetMapping(value = {"/director/{directorId}?sortBy=year,likes", "/director/{directorId}?sortBy=likes", "/director/{directorId}?sortBy=year"})
-    public List<Film> getFilmsByDirector(@PathVariable(required = false) String directorId, @RequestParam(required = false) String sortBy)
-            throws IncorrectParameterException {
+    @GetMapping( "/director/{directorId}")
+    @ResponseBody
+    public Collection<Film> getFilmsByDirector(@PathVariable(required = false) String directorId,
+                                               @RequestParam(required = false) String sortBy)
+            throws ValidationException, IncorrectParameterException {
+        if (directorId == null) {
+            String message = "id режиссёра не указан";
+            log.error("getFilmsByDirector. {}", message);
+            throw new ValidationException("id режиссёра не указан");
+        }
         try {
             return service.getFilmsByDirector(Long.parseLong(directorId), sortBy);
         } catch (NumberFormatException e) {
             String message = "Не удалось получить режиссёра по id";
-            log.warn("getFilmsByDirector. {}", message);
+            log.error("getFilmsByDirector. {}", message);
             throw new RuntimeException(message);
         }
     }

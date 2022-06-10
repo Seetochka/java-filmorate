@@ -100,14 +100,23 @@ public class FilmService {
     }
 
     // поиск фильма по содержащейся строке в названии фильма
-    public List<Film> searchFilmsByTitle(String query, String by) {
-        return storage.searchFilmsByTitle(query, by);
-
+    public Collection<Film> searchFilmsByTitle(String query, String by) throws IncorrectParameterException {
+        if (by.equals("title") || by.equals("director") || by.equals("title,director") || by.equals("director,title")) {
+            return storage.searchFilmsByTitle(query, by);
+        } else {
+            log.warn("searchFilmsByTitle. Передан неверный параметр by {}", by);
+            throw new IncorrectParameterException("by");
+        }
     }
 
     // получение списка фильмов по id режиссёра
-    public List<Film> getFilmsByDirector(long directorId, String sortBy) {
-        return storage.getFilmsByDirector(directorId, sortBy);
+    public Collection<Film> getFilmsByDirector(long directorId, String sortBy) throws IncorrectParameterException {
+        if (sortBy.equals("likes") || sortBy.equals("year")) {
+            return storage.getFilmsByDirector(directorId, sortBy);
+        } else {
+            log.warn("getFilmsByDirector. Передан неверный параметр sortBy {}", sortBy);
+            throw new IncorrectParameterException("sortBy");
+        }
 
     }
 }

@@ -37,7 +37,7 @@ public class Film {
     @JsonIgnore
     private Set<Integer> likes = new TreeSet<>();
     @NotNull
-    private List<Director> directors;
+    private Collection<Director> directors;
 
     /**
      * Сохранение лайка пользователя

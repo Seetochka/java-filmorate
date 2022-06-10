@@ -48,8 +48,8 @@ public interface FilmStorage {
 
 
     // поиск фильма по содержащейся строке в названии фильма
-    List<Film> searchFilmsByTitle(String query, String by);
+    Collection<Film> searchFilmsByTitle(String query, String by);
 
     // получение списка фильмов по id режиссёра
-    List<Film> getFilmsByDirector(long directorId, String sortBy);
+    Collection<Film> getFilmsByDirector(long directorId, String sortBy);
 }

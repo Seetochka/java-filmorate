@@ -12,6 +12,7 @@ import ru.yandex.practicum.filmorate.models.Director;
 import ru.yandex.practicum.filmorate.services.DirectorService;
 
 import javax.validation.Valid;
+import java.util.Collection;
 import java.util.List;
 
 @RestController
@@ -53,7 +54,7 @@ public class DirectorController {
 
     // получение списка всех режиссёров
     @GetMapping
-    public List<Director> findAll() {
+    public Collection<Director> findAll() {
         return directorService.getAllDirectors();
     }
 
