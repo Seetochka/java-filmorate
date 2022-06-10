@@ -417,7 +417,6 @@ public class FilmDbStorage implements FilmStorage {
         return directors;
     }
 
-
     // удаляет связь режиссёра и фильма
     private boolean deleteDirectorFromFilm(Film film) {
         String sqlDeleteDirectorFromFilm = "DELETE FROM film_director WHERE film_id = ?";

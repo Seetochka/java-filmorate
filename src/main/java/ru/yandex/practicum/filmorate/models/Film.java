@@ -36,7 +36,6 @@ public class Film {
     private Collection<Genre> genres;
     @JsonIgnore
     private Set<Integer> likes = new TreeSet<>();
-    @NotNull
     private Collection<Director> directors;
 
     /**
