@@ -54,7 +54,9 @@ public class FilmDbStorage implements FilmStorage {
                     Objects.requireNonNull(keyHolder.getKey()).intValue()
             );
 
-            film.setDirectors(saveDirectorFilm(film)); // положили режиссёра фильма в таблицу film_director
+            if (saveDirectorFilm(film) != null) {
+                film.setDirectors(saveDirectorFilm(film)); // положили режиссёра фильма в таблицу film_director
+            }
 
             if (film.getGenres() != null) {
                 saveFilmGenre(film.getId(), film.getGenres());
@@ -135,7 +137,9 @@ public class FilmDbStorage implements FilmStorage {
                 film.setGenres(findGenresByFilmId(film.getId()));
 
             }
-            film.setDirectors(saveDirectorFilm(film)); // положили режиссёра фильма в таблицу film_director
+            if (saveDirectorFilm(film) != null) {
+                film.setDirectors(saveDirectorFilm(film)); // положили режиссёра фильма в таблицу film_director
+            }
         } catch (Exception e) {
             String message = "Не удалось обновить данные фильма";
 
@@ -378,43 +382,46 @@ public class FilmDbStorage implements FilmStorage {
     private Collection<Director> saveDirectorFilm(Film film) {
         String sqlAddFilmDirector = "INSERT INTO film_director (film_id, director_id) " +
                 "VALUES (?, ?)";
+        if (film.getDirectors() != null) {
 
-        // получаем только уникальные id режиссёров
-        Set<Long> uniqueDirectorId = new HashSet<>();
-        for (Director director : film.getDirectors()) {
-            uniqueDirectorId.add(director.getId());
-        }
-
-        // проверяем что у фильма указан id существующего режиссёра
-        List<Optional<Director>> optDirectors = new ArrayList<>();
-        uniqueDirectorId.forEach(id -> optDirectors.add(directorDbStorage.getDirectorById(id)));
-        optDirectors.forEach(opt -> {
-            if (opt.isEmpty()) {
-                String message = "Неверный id режиссёра";
-                log.warn("saveDirectorFilm. {}", message);
-                throw new RuntimeException(message);
+            // получаем только уникальные id режиссёров
+            Set<Long> uniqueDirectorId = new HashSet<>();
+            for (Director director : film.getDirectors()) {
+                uniqueDirectorId.add(director.getId());
             }
-        });
-        if (deleteDirectorFromFilm(film)) { // удаляем старые записи из таблицы о режиссёрах фильма и
-            // добавляем новые если удаление прошло успешно
-            try {
-                uniqueDirectorId.forEach(id -> {
-                    jdbcTemplate.update(sqlAddFilmDirector, film.getId(), id);
 
-                });
-            } catch (Exception e) {
-                String message = "Не удалось сохранить данные в таблицу film_director";
+            // проверяем что у фильма указан id существующего режиссёра
+            List<Optional<Director>> optDirectors = new ArrayList<>();
+            uniqueDirectorId.forEach(id -> optDirectors.add(directorDbStorage.getDirectorById(id)));
+            optDirectors.forEach(opt -> {
+                if (opt.isEmpty()) {
+                    String message = "Неверный id режиссёра";
+                    log.warn("saveDirectorFilm. {}", message);
+                    throw new RuntimeException(message);
+                }
+            });
+            if (deleteDirectorFromFilm(film)) { // удаляем старые записи из таблицы о режиссёрах фильма и
+                // добавляем новые если удаление прошло успешно
+                try {
+                    uniqueDirectorId.forEach(id -> {
+                        jdbcTemplate.update(sqlAddFilmDirector, film.getId(), id);
 
-                log.error("saveDirectorFilm. {}", message);
-                throw new RuntimeException(message);
+                    });
+                } catch (Exception e) {
+                    String message = "Не удалось сохранить данные в таблицу film_director";
+
+                    log.error("saveDirectorFilm. {}", message);
+                    throw new RuntimeException(message);
+                }
             }
-        }
-        List<Director> directors = new ArrayList<>();
-        optDirectors.forEach(director -> {
-            director.ifPresent(directors::add);
+            List<Director> directors = new ArrayList<>();
+            optDirectors.forEach(director -> {
+                director.ifPresent(directors::add);
 
-        });
-        return directors;
+            });
+            return directors;
+        }
+        return null;
     }
 
     // удаляет связь режиссёра и фильма
