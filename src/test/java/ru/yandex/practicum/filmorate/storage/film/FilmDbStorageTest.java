@@ -136,6 +136,6 @@ class FilmDbStorageTest {
         //Collection<User> commonFilms = filmStorage.findCommonFriends(1, 2);
 
         assertThat(commonFilms).hasSize(1);
-        assertThat(filmStorage.findById(2)).isEqualTo(2);
+        assertThat(filmStorage.findById(2).get().getId()).isEqualTo(2);
     }
 }
