@@ -142,6 +142,7 @@ public class FilmDbStorage implements FilmStorage {
 
         try {
             jdbcTemplate.update(sqlQuery, userId, filmId);
+        } catch (DuplicateKeyException ignored) {
         } catch (Exception e) {
             String message = "Не удалось добавить лайк фильму";
 
