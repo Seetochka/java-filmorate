@@ -96,6 +96,9 @@ public class FilmService {
         return storage.findPopularFilms(count);
     }
 
+    /**
+     * Получение общих фильмов друзей
+     */
     public Collection<Film> getCommonFilms(int userId, int friendId) {
         return storage.getCommonFilms(userId, friendId);
     }

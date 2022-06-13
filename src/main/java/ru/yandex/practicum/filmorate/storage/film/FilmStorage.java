@@ -45,9 +45,8 @@ public interface FilmStorage {
      */
     Collection<Film> findPopularFilms(int count);
 
-    /*
+    /**
     * Получение общих фильмов друзей
-    * */
-
+    */
     Collection<Film> getCommonFilms(int userId, int friendId);
 }
