@@ -5,20 +5,19 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.models.Director;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
 @Component
-public class DirectorDbStorage {
+public class DirectorDbStorage implements DirectorStorage {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -26,96 +25,98 @@ public class DirectorDbStorage {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    // создание режиссёра
     public Director createDirector(Director director) {
-        long id = saveAndReturnId(director); // добавлили режиссёра в таблицу и получили id
-        return Director.builder()
-                .id(id)
-                .name(director.getName())
-                .build();
-    }
 
-    //добавляет режиссёра в таблицу и возвращает Id
-    private long saveAndReturnId(Director director) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
         String sqlAddDirector = "INSERT INTO director (name) VALUES (?)";
+
         try {
-            KeyHolder keyHolder = new GeneratedKeyHolder();
+
             jdbcTemplate.update(connection -> {
                 PreparedStatement stmt = connection.prepareStatement(sqlAddDirector, new String[]{"id"});
                 stmt.setString(1, director.getName());
                 return stmt;
             }, keyHolder);
-            return keyHolder.getKey().longValue();
+            director.setId(Objects.requireNonNull(keyHolder.getKey()).intValue());
         } catch (Exception e) {
-            String message = "Не удалось добавить фильм и получить id";
+            String message = "Не удалось добавить режиссёра и получить id";
             log.error("saveAndReturnId. {}", message);
             throw new RuntimeException(message);
         }
+        return director;
     }
 
-    // обновление данных режиссёра
-    public Director updateDirector(Director director) throws ValidationException {
+    public Director updateDirector(Director director) {
         String sqlUpdDirector = "UPDATE director SET name = ? WHERE id = ?";
-        String sqlDirectorById = "SELECT * FROM director WHERE id = ?";
-        SqlRowSet userDirector = jdbcTemplate.queryForRowSet(sqlDirectorById, director.getId());
-        if (userDirector.next()) {
+
+        try {
             jdbcTemplate.update(sqlUpdDirector, director.getName(), director.getId());
             log.info("Данные режиссёра {} успешно обновлены", director.getName());
-            return director;
-        } else {
-            log.warn("Введён неверный id");
-            throw new ValidationException(String.format("Режиссёр с id %d не найден", director.getId()));
-        }
-    }
-
-
-    // удаление режиссёра
-    public String removeDirector(Long id) {
-        String sqlDeleteDirector = "DELETE FROM director WHERE id = ?";
-        if (jdbcTemplate.update(sqlDeleteDirector, id) == 0) {
-            String message = "Не удалось удалить данные режиссёра";
-            log.error("removeDirector. {}", message);
-            throw new RuntimeException(message);
-        }
-        return String.format("Режиссёр с id %d удалён", id);
-    }
-
-    // получение списка всех режиссёров
-    public Collection<Director> getAllDirectors() {
-        String sqlAllDirectors = "SELECT * FROM director";
-        try {
-            return jdbcTemplate.query(sqlAllDirectors, (rs, rowNum) -> makeDirector(rs, jdbcTemplate));
         } catch (EmptyResultDataAccessException e) {
             return null;
         } catch (Exception e) {
             String message = "Не удалось получить режиссёра";
-            log.warn("getDirectorById. {}", message);
+            log.warn("updateDirector. {}", message);
+            throw new RuntimeException(message);
+        }
+
+        return director;
+    }
+
+    public String deleteDirector(int id) {
+        String sqlDeleteDirector = "DELETE FROM director WHERE id = ?";
+
+        try {
+            jdbcTemplate.update(sqlDeleteDirector, id);
+            log.info("Режиссёр с id {} удалён", id);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        } catch (Exception e) {
+            String message = "Не удалось удалить режиссёра";
+            log.warn("deleteDirector. {}", message);
+            throw new RuntimeException(message);
+        }
+
+        return String.format("Режиссёр с id %d удалён", id);
+    }
+
+    @Override
+    public Collection<Director> findAllDirectors() {
+        String sqlAllDirectors = "SELECT id, name FROM director";
+        try {
+            return jdbcTemplate.query(sqlAllDirectors, (rs, rowNum) -> makeDirector(rs));
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        } catch (Exception e) {
+            String message = "Не удалось получить список режиссёров";
+
+            log.warn("findAllDirectors. {}", message);
             throw new RuntimeException(message);
         }
     }
 
-    // получение режиссёра по Id
-    public Optional<Director> getDirectorById(Long id) {
+    public Optional<Director> findDirectorById(int id) {
         String sqlDirectorById = "SELECT * FROM director WHERE id = ?";
         try {
-            Director director = jdbcTemplate.queryForObject(sqlDirectorById, (rs, rowNum) -> makeDirector(rs, jdbcTemplate), id);
+            Director director = jdbcTemplate.queryForObject(sqlDirectorById, (rs, rowNum) -> makeDirector(rs), id);
             return Optional.ofNullable(director);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         } catch (Exception e) {
-            String message = "Не удалось получить режиссёра";
+            String message = "Не удалось получить режиссёра по указанному id";
             log.warn("getDirectorById. {}", message);
             throw new RuntimeException(message);
         }
     }
 
-    public Collection<Director> findDirectorByFilmId(int filmId) {
+    public Collection<Director> findDirectorsByFilmId(int filmId) {
         String sqlDirectorByFilmId = "SELECT d.id, d.name " +
                 "FROM director d " +
                 "INNER JOIN film_director fd ON d.id = fd.director_id " +
                 "WHERE fd.film_id = ?";
         try {
-            return jdbcTemplate.query(sqlDirectorByFilmId, (rs, rowNum) -> makeDirector(rs, jdbcTemplate), filmId);
+            return jdbcTemplate.query(sqlDirectorByFilmId, (rs, rowNum) -> makeDirector(rs), filmId);
         } catch (EmptyResultDataAccessException e) {
             return null;
         } catch (Exception e) {
@@ -126,8 +127,8 @@ public class DirectorDbStorage {
         }
     }
 
-    private Director makeDirector(ResultSet rs, JdbcTemplate jdbcTemplate) throws SQLException {
-        Long id = rs.getLong("id");
+    private Director makeDirector(ResultSet rs) throws SQLException {
+        int id = rs.getInt("id");
         String name = rs.getString("name");
         return Director.builder()
                 .id(id)

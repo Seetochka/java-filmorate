@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.controllers;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exceptions.IncorrectParameterException;
@@ -13,66 +12,53 @@ import ru.yandex.practicum.filmorate.services.DirectorService;
 
 import javax.validation.Valid;
 import java.util.Collection;
-import java.util.List;
 
 @RestController
 @RequestMapping("/directors")
 @Slf4j
 @RequiredArgsConstructor
 public class DirectorController {
-    DirectorService directorService;
+    private final DirectorService directorService;
 
-    @Autowired
-    public DirectorController(DirectorService directorService) {
-        this.directorService = directorService;
-    }
-
-    // создание режиссёра
+    /**
+     * Создание режиссёра
+     */
     @PostMapping
-    public Director createDirector(@Valid @RequestBody Director director, BindingResult bindingResult) throws ValidationException {
+    public Director saveDirector(@Valid @RequestBody Director director, BindingResult bindingResult) throws ValidationException {
         if (bindingResult.hasErrors()) {
             String message = getStringErrors(bindingResult);
+
             log.warn("saveDirector. {}", message);
             throw new ValidationException(message);
         }
-        Director createdDirector = directorService.createDirector(director);
-        log.info("createDirector. Режиссёр с id {} успешно добавлен", createdDirector.getId());
+        Director createdDirector = directorService.saveDirector(director);
+
+        log.info("saveDirector. Режиссёр с id {} успешно добавлен", createdDirector.getId());
         return createdDirector;
     }
 
-    // получение режиссёра по id
+    /**
+     * Получение режиссёра по id
+     */
     @GetMapping("/{id}")
-    public Director getDirectorById(@PathVariable String id) throws ModelNotFoundException {
-        try {
-            return directorService.getDirectorById(Long.parseLong(id));
-        } catch (NumberFormatException e) {
-            String message = "Не удалось получить режиссёра";
-            log.warn("getDirectorById. {}", message);
-            throw new RuntimeException(message);
-        }
+    public Director findDirectorById(@PathVariable String id) throws ModelNotFoundException {
+        return directorService.findDirectorById(Integer.parseInt(id));
     }
 
-    // получение списка всех режиссёров
+    /**
+     * Получение списка всех режиссёров
+     */
     @GetMapping
     public Collection<Director> findAll() {
-        return directorService.getAllDirectors();
+        return directorService.findAllDirectors();
     }
 
-    // обновление данных о режиссёре
-    @PutMapping(value = {"/{id}"})
-    public Director updateDirector(@Valid @RequestBody Director director, @PathVariable(required = false) String id, BindingResult bindingResult)
-            throws ValidationException, IncorrectParameterException {
-        try {
-            if (Long.parseLong(id) != director.getId()) {
-                String message = "id в теле запроса и в URL разный";
-                log.warn("getDirectorById. {}", message);
-                throw new IncorrectParameterException(message);
-            }
-        } catch (NumberFormatException e) {
-            String message = "Не удалось получить режиссёра по id";
-            log.warn("getDirectorById. {}", message);
-            throw new RuntimeException(message);
-        }
+    /**
+     * Обновление данных о режиссёре
+     */
+    @PutMapping
+    public Director updateDirector(@Valid @RequestBody Director director, BindingResult bindingResult)
+            throws ValidationException, ModelNotFoundException {
         if (bindingResult.hasErrors()) {
             String message = getStringErrors(bindingResult);
             log.warn("updateDirector. " + message);
@@ -83,17 +69,14 @@ public class DirectorController {
         return updDirector;
     }
 
-    // удаление режиссёра
+    /**
+     * Удаление режиссёра
+     */
     @DeleteMapping(value = {"/{id}"})
     @ResponseBody
-    public String removeDirector(@PathVariable(required = false) String id) {
-        try {
-            return directorService.removeDirector(Long.parseLong(id));
-        } catch (NumberFormatException e) {
-            String message = "Не удалось удалить режиссёра";
-            log.warn("removeDirector. {}", message);
-            throw new RuntimeException(message);
-        }
+    public String deleteDirector(@PathVariable(required = false) String id) throws ModelNotFoundException, IncorrectParameterException, ValidationException {
+        return directorService.deleteDirector(id);
+
     }
 
     private String getStringErrors(BindingResult bindingResult) {

@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import ru.yandex.practicum.filmorate.exceptions.ModelNotFoundException;
 import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.models.Mpa;
 import ru.yandex.practicum.filmorate.storage.mpa.MpaDbStorage;
@@ -68,7 +69,7 @@ class FilmDbStorageTest {
     }
 
     @Test
-    void testUpdateFilm() {
+    void testUpdateFilm() throws ModelNotFoundException {
         Optional<Film> filmOptional = filmStorage.findById(2);
         assertThat(filmOptional).isPresent();
 

@@ -5,14 +5,15 @@ import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 
-
-// хранит онформацию о режиссёре
+/**
+ * Хранит информацию о режиссёре
+ */
 @Builder
 @Data
 public class Director {
 
-    Long id;
+    private int id;
     @NotNull
-    String name;
+    private String name;
 
 }

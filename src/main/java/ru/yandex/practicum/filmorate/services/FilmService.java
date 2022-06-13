@@ -3,16 +3,17 @@ package ru.yandex.practicum.filmorate.services;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import ru.yandex.practicum.filmorate.exceptions.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.exceptions.ModelNotFoundException;
+import ru.yandex.practicum.filmorate.models.Director;
 import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
+
+import static ru.yandex.practicum.filmorate.constants.Constant.*;
+
 
 /**
  * Сервис фильмов
@@ -22,16 +23,25 @@ import java.util.Optional;
 public class FilmService {
     private final FilmStorage storage;
     private final UserService userService;
+    private final DirectorService directorService;
 
-    public FilmService(@Qualifier("filmDbStorage") FilmStorage storage, UserService userService) {
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage storage, UserService userService, DirectorService directorService) {
         this.storage = storage;
         this.userService = userService;
+        this.directorService = directorService;
     }
 
     /**
      * Сохранение фильма
      */
-    public Film saveFilm(Film film) {
+    public Film saveFilm(Film film) throws ModelNotFoundException {
+
+        if (film.getDirectors() != null) {
+            // проверяем что у фильма указан id существующего режиссёра
+            for (Director director : film.getDirectors()) {
+                directorService.findDirectorById(director.getId());
+            }
+        }
         return storage.saveFilm(film);
     }
 
@@ -63,6 +73,13 @@ public class FilmService {
      */
     public Film updateFilm(Film film) throws ModelNotFoundException {
         findById(film.getId());
+
+        if (film.getDirectors() != null) {
+            // проверяем что у фильма указан id существующего режиссёра
+            for (Director director : film.getDirectors()) {
+                directorService.findDirectorById(director.getId());
+            }
+        }
 
         return storage.updateFilm(film);
     }
@@ -99,22 +116,38 @@ public class FilmService {
         return storage.findPopularFilms(count);
     }
 
-    // поиск фильма по содержащейся строке в названии фильма
-    public Collection<Film> searchFilmsByTitle(String query, String by) throws IncorrectParameterException {
-        if (by.equals("title") || by.equals("director") || by.equals("title,director") || by.equals("director,title")) {
-            return storage.searchFilmsByTitle(query, by);
+    /**
+     * Поиск фильма по содержащейся строке в названии фильма или в имени режиссёра
+     */
+    public Collection<Film> searchFilmsByTitleAndDirector(String query, String by) throws IncorrectParameterException {
+        if (by.equals(TITLE) || by.equals(DIRECTOR) ||
+                by.equals(TITLE_AND_DIRECTOR) || by.equals(DIRECTOR_AND_TITLE)) {
+            return storage.searchFilmsByTitleAndDirector(query, by);
         } else {
-            log.warn("searchFilmsByTitle. Передан неверный параметр by {}", by);
+            log.warn("searchFilmsByTitleAndDirector. Передан неверный параметр by {}", by);
             throw new IncorrectParameterException("by");
         }
     }
 
-    // получение списка фильмов по id режиссёра
-    public Collection<Film> getFilmsByDirector(long directorId, String sortBy) throws IncorrectParameterException {
-        if (sortBy.equals("likes") || sortBy.equals("year")) {
-            return storage.getFilmsByDirector(directorId, sortBy);
+    /**
+     * Получение списка фильмов по id режиссёра
+     */
+    public Collection<Film> findFilmsByDirector(String directorId, String sortBy) throws IncorrectParameterException, ModelNotFoundException {
+
+        try {
+            Integer.parseInt(directorId);
+        } catch (NumberFormatException e) {
+            String message = "Введён неверный формат id";
+            log.error("findFilmsByDirector. {}", message);
+            throw new RuntimeException(message);
+        }
+
+        directorService.findDirectorById(Integer.parseInt(directorId));
+
+        if (sortBy.equals(LIKES) || sortBy.equals(YEAR)) {
+            return storage.findFilmsByDirector(Integer.parseInt(directorId), sortBy);
         } else {
-            log.warn("getFilmsByDirector. Передан неверный параметр sortBy {}", sortBy);
+            log.warn("findFilmsByDirector. Передан неверный параметр sortBy {}", sortBy);
             throw new IncorrectParameterException("sortBy");
         }
 

@@ -102,6 +102,9 @@ ALTER TABLE IF EXISTS friend
 ALTER TABLE IF EXISTS film_genre
     ADD FOREIGN KEY (film_id) REFERENCES `film` (id);
 
+ALTER TABLE IF EXISTS film_genre
+    ADD FOREIGN KEY (genre_id) REFERENCES `genre` (id);
+
 ALTER TABLE IF EXISTS film_director
     ADD FOREIGN KEY (film_id) REFERENCES `film` (id);
 

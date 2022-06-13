@@ -4,7 +4,6 @@ import ru.yandex.practicum.filmorate.exceptions.ModelNotFoundException;
 import ru.yandex.practicum.filmorate.models.Film;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -29,7 +28,7 @@ public interface FilmStorage {
     /**
      * Обновление фильма
      */
-    Film updateFilm(Film film);
+    Film updateFilm(Film film) throws ModelNotFoundException;
 
     /**
      * Сохранение лайка
@@ -47,9 +46,13 @@ public interface FilmStorage {
     Collection<Film> findPopularFilms(int count);
 
 
-    // поиск фильма по содержащейся строке в названии фильма
-    Collection<Film> searchFilmsByTitle(String query, String by);
+    /**
+     * Поиск фильма по содержащейся строке в названии фильма
+     */
+    Collection<Film> searchFilmsByTitleAndDirector(String query, String by);
 
-    // получение списка фильмов по id режиссёра
-    Collection<Film> getFilmsByDirector(long directorId, String sortBy);
+    /**
+     * Получение списка фильмов по id режиссёра
+     */
+    Collection<Film> findFilmsByDirector(long directorId, String sortBy);
 }

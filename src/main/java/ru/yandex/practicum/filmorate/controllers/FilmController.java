@@ -12,11 +12,10 @@ import ru.yandex.practicum.filmorate.services.FilmService;
 
 import javax.validation.Valid;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Контроллер для работы с фильмами
-*/
+ */
 @RestController
 @RequestMapping("/films")
 @Slf4j
@@ -25,7 +24,7 @@ public class FilmController {
     private final FilmService service;
 
     @PostMapping
-    public Film saveFilm(@Valid @RequestBody Film film, BindingResult bindingResult) throws ValidationException {
+    public Film saveFilm(@Valid @RequestBody Film film, BindingResult bindingResult) throws ValidationException, ModelNotFoundException {
         if (bindingResult.hasErrors()) {
             String message = getStringErrors(bindingResult);
 
@@ -88,32 +87,28 @@ public class FilmController {
     }
 
 
+    /**
+     * Возвращает список фильмов включающих в название фильма или в имени режиссёра указанную подстроку
+     */
     @GetMapping("/search")
     @ResponseBody
-    public Collection<Film> searchFilmsByTitleAndDirector(@RequestParam(required = false) String query,
+    public Collection<Film> searchFilmsByTitleAndDirector(@RequestParam String query,
                                                           @RequestParam String by)
             throws IncorrectParameterException {
-        return service.searchFilmsByTitle(query, by);
+        return service.searchFilmsByTitleAndDirector(query, by);
     }
 
-    //Возвращает список фильмов режиссера отсортированных по количеству лайков или/и году выпуска
-    @GetMapping( "/director/{directorId}")
+    /**
+     * Возвращает список фильмов режиссера отсортированных по количеству лайков или/и году выпуска
+     */
+    @GetMapping("/director/{directorId}")
     @ResponseBody
-    public Collection<Film> getFilmsByDirector(@PathVariable(required = false) String directorId,
-                                               @RequestParam(required = false) String sortBy)
-            throws ValidationException, IncorrectParameterException {
-        if (directorId == null) {
-            String message = "id режиссёра не указан";
-            log.error("getFilmsByDirector. {}", message);
-            throw new ValidationException("id режиссёра не указан");
-        }
-        try {
-            return service.getFilmsByDirector(Long.parseLong(directorId), sortBy);
-        } catch (NumberFormatException e) {
-            String message = "Не удалось получить режиссёра по id";
-            log.error("getFilmsByDirector. {}", message);
-            throw new RuntimeException(message);
-        }
+    public Collection<Film> getFilmsByDirector(@PathVariable String directorId,
+                                               @RequestParam String sortBy)
+            throws IncorrectParameterException, ModelNotFoundException {
+
+        return service.findFilmsByDirector(directorId, sortBy);
+
     }
 
     private String getStringErrors(BindingResult bindingResult) {
