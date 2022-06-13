@@ -7,10 +7,10 @@ CREATE TABLE IF NOT EXISTS `mpa`
 CREATE TABLE IF NOT EXISTS `user`
 (
     id         int AUTO_INCREMENT PRIMARY KEY NOT NULL,
-    email      varchar(50)     NOT NULL,
-    login      varchar(50)     NOT NULL,
-    name       varchar(50)     NOT NULL,
-    birthday   date            NOT NULL,
+    email      varchar(50)                    NOT NULL,
+    login      varchar(50)                    NOT NULL,
+    name       varchar(50)                    NOT NULL,
+    birthday   date                           NOT NULL,
     created_at timestamp DEFAULT (now()),
     updated_at timestamp DEFAULT (now())
 );
@@ -19,10 +19,10 @@ CREATE TABLE IF NOT EXISTS `film`
 (
     id           int AUTO_INCREMENT PRIMARY KEY NOT NULL,
     name         varchar(100),
-    description  text            NOT NULL,
-    release_date date            NOT NULL,
-    duration     int             NOT NULL,
-    mpa_id       int             NOT NULL,
+    description  text                           NOT NULL,
+    release_date date                           NOT NULL,
+    duration     int                            NOT NULL,
+    mpa_id       int                            NOT NULL,
     created_at   timestamp DEFAULT (now()),
     updated_at   timestamp DEFAULT (now())
 );
@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS `friend`
 CREATE TABLE IF NOT EXISTS `genre`
 (
     id         int AUTO_INCREMENT PRIMARY KEY NOT NULL,
-    name       varchar(50)     NOT NULL,
+    name       varchar(50)                    NOT NULL,
     created_at timestamp DEFAULT (now()),
     updated_at timestamp DEFAULT (now())
 );
@@ -75,19 +75,24 @@ ALTER TABLE IF EXISTS `film`
     ADD FOREIGN KEY (mpa_id) REFERENCES `mpa` (id);
 
 ALTER TABLE IF EXISTS `like`
-    ADD FOREIGN KEY (user_id) REFERENCES `user` (id);
+    ADD FOREIGN KEY (user_id) REFERENCES `user` (id)
+        ON DELETE CASCADE;
 
 ALTER TABLE IF EXISTS `like`
-    ADD FOREIGN KEY (film_id) REFERENCES `film` (id);
+    ADD FOREIGN KEY (film_id) REFERENCES `film` (id)
+        ON DELETE CASCADE;
 
 ALTER TABLE IF EXISTS friend
-    ADD FOREIGN KEY (user_id) REFERENCES `user` (id);
+    ADD FOREIGN KEY (user_id) REFERENCES `user` (id)
+        ON DELETE CASCADE;
 
 ALTER TABLE IF EXISTS friend
-    ADD FOREIGN KEY (friend_id) REFERENCES `user` (id);
+    ADD FOREIGN KEY (friend_id) REFERENCES `user` (id)
+        ON DELETE CASCADE;
 
 ALTER TABLE IF EXISTS film_genre
-    ADD FOREIGN KEY (film_id) REFERENCES `film` (id);
+    ADD FOREIGN KEY (film_id) REFERENCES `film` (id)
+        ON DELETE CASCADE;
 
 ALTER TABLE IF EXISTS film_genre
     ADD FOREIGN KEY (genre_id) REFERENCES `genre` (id);

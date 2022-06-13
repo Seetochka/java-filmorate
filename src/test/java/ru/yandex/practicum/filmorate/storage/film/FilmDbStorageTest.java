@@ -62,6 +62,31 @@ class FilmDbStorageTest {
     }
 
     @Test
+    void testDeleteFilm() {
+        Film film = Film.builder()
+                .name("deleted film")
+                .description("description")
+                .releaseDate(LocalDate.now())
+                .duration(120)
+                .mpa(Mpa.builder().id(1).build())
+                .build();
+
+        film = filmStorage.saveFilm(film);
+
+        Collection<Film> films = filmStorage.findAll();
+        assertThat(films).hasSize(4);
+
+        filmStorage.deleteFilm(film.getId());
+
+        films = filmStorage.findAll();
+        assertThat(films).hasSize(3);
+
+        Optional<Film> deletedFilm = filmStorage.findById(film.getId());
+
+        assertThat(deletedFilm).isEmpty();
+    }
+
+    @Test
     void testFindAll() {
         Collection<Film> films = filmStorage.findAll();
         assertThat(films).hasSize(3);

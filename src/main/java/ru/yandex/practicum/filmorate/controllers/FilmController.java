@@ -73,6 +73,11 @@ public class FilmController {
         return countLikes;
     }
 
+    @DeleteMapping("/{id}")
+    public void deleteFilm(@PathVariable("id") int filmId) throws ModelNotFoundException {
+        service.deleteFilm(filmId);
+    }
+
     @DeleteMapping("/{id}/like/{userId}")
     public int deleteLike(@PathVariable("id") int filmId, @PathVariable int userId) throws ModelNotFoundException {
         int countLikes = service.deleteLike(filmId, userId);
