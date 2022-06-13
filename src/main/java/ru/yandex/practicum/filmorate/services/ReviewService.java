@@ -92,7 +92,7 @@ public class ReviewService {
         userService.findById(userId);
 
         if (status.isPresent()) {
-            if(!status.get()) {
+            if (!status.get()) {
                 likeReviewStorage.update(reviewId, userId, true);
                 review.setUseful(review.getUseful() + 2);
             }
@@ -112,7 +112,7 @@ public class ReviewService {
 
         Optional<Boolean> status = likeReviewStorage.getStatus(reviewId, userId);
         if (status.isPresent()) {
-            if(status.get()) {
+            if (status.get()) {
                 likeReviewStorage.update(reviewId, userId, false);
                 review.setUseful(review.getUseful() - 2);
             }
@@ -132,7 +132,7 @@ public class ReviewService {
 
         Optional<Boolean> status = likeReviewStorage.getStatus(reviewId, userId);
         if (status.isPresent()) {
-            if(status.get()) {
+            if (status.get()) {
                 likeReviewStorage.delete(reviewId, userId);
                 review.setUseful(review.getUseful() - 1);
             }
@@ -154,7 +154,7 @@ public class ReviewService {
 
         Optional<Boolean> status = likeReviewStorage.getStatus(reviewId, userId);
         if (status.isPresent()) {
-            if(!status.get()) {
+            if (!status.get()) {
                 likeReviewStorage.delete(reviewId, userId);
                 review.setUseful(review.getUseful() + 1);
             }
@@ -166,4 +166,3 @@ public class ReviewService {
         storage.updateReview(review);
     }
 }
-

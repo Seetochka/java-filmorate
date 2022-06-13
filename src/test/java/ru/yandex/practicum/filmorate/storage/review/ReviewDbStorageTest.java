@@ -95,5 +95,4 @@ class ReviewDbStorageTest {
         reviews = storage.findByFilmId(1, 1);
         assertThat(reviews).hasSize(1);
     }
-
 }

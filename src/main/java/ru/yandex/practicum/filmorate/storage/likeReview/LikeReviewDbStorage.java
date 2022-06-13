@@ -50,7 +50,7 @@ public class LikeReviewDbStorage implements LikeReviewStorage {
 
         try {
             SqlRowSet rs = jdbcTemplate.queryForRowSet(sqlQuery, reviewId, userId);
-            if(rs.next()) {
+            if (rs.next()) {
                 return Optional.of(rs.getBoolean("is_like"));
             } else {
                 return Optional.empty();
