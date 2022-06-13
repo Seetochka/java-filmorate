@@ -46,6 +46,7 @@ public class FilmDbStorage implements FilmStorage {
             film.setId(
                     Objects.requireNonNull(keyHolder.getKey()).intValue()
             );
+            film.setMpa(findMpaById(film.getMpa().getId()));
 
             if (film.getGenres() != null) {
                 saveFilmGenre(film.getId(), film.getGenres());
@@ -116,6 +117,8 @@ public class FilmDbStorage implements FilmStorage {
                     film.getDuration(),
                     film.getMpa().getId(),
                     film.getId());
+
+            film.setMpa(findMpaById(film.getMpa().getId()));
 
             if (film.getGenres() != null) {
                 if (findCountGenreForFilm(film.getId()) > 0) {
@@ -283,12 +286,23 @@ public class FilmDbStorage implements FilmStorage {
         }
     }
 
-    private Film mapRowToFilm(ResultSet resultSet, int i) throws SQLException {
-        Mpa mpa = Mpa.builder()
-                .id(resultSet.getInt("mpa_id"))
-                .name(resultSet.getString("mpa_name"))
-                .build();
+    private Mpa findMpaById(int mpaId) {
+        String sqlQuery = "SELECT id as mpa_id, name as mpa_name FROM mpa WHERE id = ?";
 
+        try {
+            return jdbcTemplate.queryForObject(sqlQuery, this::mapRowToMpa, mpaId);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        } catch (Exception e) {
+            String message = "Не удалось получить рейтинг фильма";
+
+            log.error("FindMpaById. {}", message);
+            throw new RuntimeException(message);
+        }
+    }
+
+    private Film mapRowToFilm(ResultSet resultSet, int i) throws SQLException {
+        Mpa mpa = mapRowToMpa(resultSet, i);
 
         Collection<Genre> genres = findGenresByFilmId(resultSet.getInt("id"));
         if (genres != null && genres.isEmpty()) genres = null;
@@ -308,6 +322,13 @@ public class FilmDbStorage implements FilmStorage {
         return Genre.builder()
                 .id(resultSet.getInt("id"))
                 .name(resultSet.getString("name"))
+                .build();
+    }
+
+    private Mpa mapRowToMpa(ResultSet resultSet, int i) throws SQLException {
+        return Mpa.builder()
+                .id(resultSet.getInt("mpa_id"))
+                .name(resultSet.getString("mpa_name"))
                 .build();
     }
 }

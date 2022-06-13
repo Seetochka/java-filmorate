@@ -37,14 +37,10 @@ public class RecommendationService {
 
         Collection<Like> likes = likeStorage.findLikes();
 
-        // преобразовывает в структуру пользователь -> коллекция id фильмов, которые он лайкнул
         Map<Integer, Collection<Integer>> aggregatedUserLikes = aggregateUserLikes(likes);
 
-        // расставляет фильмы по количеству пересечений с искомым пользователем
-        // количество пересечений -> коллекция id фильмов
         Map<Integer, Set<Integer>> recommendation = getRecommendationMap(aggregatedUserLikes, userId);
 
-        // собирает связное множество рекомендованных id фильмов
         Set<Integer> filmIds = prepareRecommendation(recommendation);
 
         return filmIds
@@ -56,6 +52,10 @@ public class RecommendationService {
                 .collect(Collectors.toUnmodifiableList());
     }
 
+    /**
+     * Метод преобразовывает данные из БД в структуру
+     * пользователь -> коллекция id фильмов, которые он лайкнул
+     */
     private Map<Integer, Collection<Integer>> aggregateUserLikes(Collection<Like> likesOtherUsers) {
         Map<Integer, Collection<Integer>> aggregatedUserLikes = new HashMap<>();
 
@@ -70,6 +70,10 @@ public class RecommendationService {
         return aggregatedUserLikes;
     }
 
+    /**
+     * Расставляет фильмы по количеству пересечений с искомым пользователем
+     * количество пересечений -> коллекция id фильмов
+     */
     private Map<Integer, Set<Integer>> getRecommendationMap(Map<Integer, Collection<Integer>> aggregateUserLikes, int userId) {
         Map<Integer, Set<Integer>> result = new TreeMap<>(Collections.reverseOrder());
         Collection<Integer> userLikes = aggregateUserLikes.remove(userId);
@@ -91,6 +95,9 @@ public class RecommendationService {
         return result;
     }
 
+    /**
+     * Собирает связное множество рекомендованных id фильмов
+     */
     private Set<Integer> prepareRecommendation(Map<Integer, Set<Integer>> recommendLikes) {
         Set<Integer> filmIds = new LinkedHashSet<>();
 
