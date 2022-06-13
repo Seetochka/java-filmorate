@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.event;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -14,12 +15,9 @@ import java.util.Collection;
 
 @Slf4j
 @Repository
+@RequiredArgsConstructor
 public class EventDBStorage implements EventStorage {
     private final JdbcTemplate jdbcTemplate;
-
-    public EventDBStorage(JdbcTemplate jdbcTemplate){
-        this.jdbcTemplate=jdbcTemplate;
-    }
 
     @Override
     public Collection<Event> getAllByUser(Integer userId) throws ModelNotFoundException {
