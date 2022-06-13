@@ -87,7 +87,7 @@ public class InMemoryFilmStorage implements FilmStorage {
      * Получение переданного количества популярных фильмов
      */
     @Override
-    public Collection<Film> findPopularFilms(int count) {
+    public Collection<Film> findPopularFilms(int count, Optional<Integer> genreId, Optional<Integer> year) {
         return films.values()
                 .stream()
                 .sorted(Comparator.comparingInt(Film::getCountLikes).reversed())

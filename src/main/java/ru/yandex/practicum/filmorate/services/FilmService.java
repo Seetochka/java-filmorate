@@ -96,12 +96,12 @@ public class FilmService {
     /**
      * Получение переданного количества популярных фильмов
      */
-    public Collection<Film> findPopularFilms(int count) throws IncorrectParameterException {
+    public Collection<Film> findPopularFilms(int count, Optional<Integer> genreId, Optional<Integer> year) throws IncorrectParameterException {
         if (count <= 0) {
             log.warn("FindPopular. Передан неверный параметр count {}", count);
             throw new IncorrectParameterException("count");
         }
 
-        return storage.findPopularFilms(count);
+        return storage.findPopularFilms(count, genreId, year);
     }
 }

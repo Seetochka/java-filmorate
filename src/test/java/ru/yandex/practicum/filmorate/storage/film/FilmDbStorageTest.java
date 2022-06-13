@@ -116,7 +116,7 @@ class FilmDbStorageTest {
         filmStorage.saveLike(1, 1);
         filmStorage.saveLike(1, 2);
 
-        Collection<Film> popularFilms = filmStorage.findPopularFilms(1);
+        Collection<Film> popularFilms = filmStorage.findPopularFilms(1, Optional.empty(), Optional.empty());
 
         assertThat(popularFilms).hasSize(1);
         assertThat(popularFilms).contains(filmOptional.get());
@@ -130,7 +130,7 @@ class FilmDbStorageTest {
         filmStorage.deleteLike(1, 1);
         filmStorage.deleteLike(1, 2);
 
-        Collection<Film> popularFilms = filmStorage.findPopularFilms(1);
+        Collection<Film> popularFilms = filmStorage.findPopularFilms(1, Optional.empty(), Optional.empty());
 
         assertThat(popularFilms).hasSize(1);
         assertThat(popularFilms).doesNotContain(filmOptional.get());
@@ -146,7 +146,7 @@ class FilmDbStorageTest {
         filmStorage.saveLike(3, 1);
         filmStorage.saveLike(3, 2);
 
-        Collection<Film> popularFilms = filmStorage.findPopularFilms(2);
+        Collection<Film> popularFilms = filmStorage.findPopularFilms(2, Optional.empty(), Optional.empty());
 
         assertThat(popularFilms).hasSize(2);
         assertThat(popularFilms).isEqualTo(List.of(filmOptional1.get(), filmOptional2.get()));

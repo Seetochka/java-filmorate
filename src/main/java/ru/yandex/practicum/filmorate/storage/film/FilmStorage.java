@@ -48,5 +48,5 @@ public interface FilmStorage {
     /**
      * Получение переданного количества популярных фильмов
      */
-    Collection<Film> findPopularFilms(int count);
+    Collection<Film> findPopularFilms(int count, Optional<Integer> genreId, Optional<Integer> year);
 }
