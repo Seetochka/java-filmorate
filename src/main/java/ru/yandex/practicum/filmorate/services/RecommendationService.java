@@ -32,7 +32,7 @@ public class RecommendationService {
      */
     public Collection<Film> findRecommendations(int userId) {
         if (likeStorage.findLikeFilmsByUserId(userId).isEmpty()) {
-            return filmStorage.findPopularFilms(COUNT_RECOMMENDATION_FILMS);
+            return filmStorage.findPopularFilms(COUNT_RECOMMENDATION_FILMS, Optional.empty(), Optional.empty());
         }
 
         Collection<Like> likes = likeStorage.findLikes();
