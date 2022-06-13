@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.rewie;
+package ru.yandex.practicum.filmorate.storage.review;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

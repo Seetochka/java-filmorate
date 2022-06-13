@@ -42,19 +42,6 @@ public class ReviewController {
         return createdReview;
     }
 
-    @GetMapping()
-    public Collection<Review> findAllByFilmId(@RequestParam(defaultValue = "10", required = false) Integer count,
-                                              @RequestParam(required = false) Integer filmId)
-            throws ModelNotFoundException, IncorrectParameterException {
-
-        return service.findByFilmId(Optional.ofNullable(filmId), count);
-    }
-
-    @GetMapping("/{id}")
-    public Review findById(@PathVariable("id") int reviewId) throws ModelNotFoundException {
-        return service.findById(reviewId);
-    }
-
     @PutMapping
     public Review updateReview(@Valid @RequestBody Review review, BindingResult bindingResult)
             throws ValidationException, ModelNotFoundException {
@@ -72,32 +59,46 @@ public class ReviewController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteReview(@PathVariable("id") int reviewID) throws ModelNotFoundException {
-        service.deleteFilm(reviewID);
+    public void deleteReview(@PathVariable("id") int reviewId) throws ModelNotFoundException {
+        service.deleteFilm(reviewId);
     }
 
+    @GetMapping("/{id}")
+    public Review findById(@PathVariable("id") int reviewId) throws ModelNotFoundException {
+        return service.findById(reviewId);
+    }
+
+    @GetMapping()
+    public Collection<Review> findAllByFilmId(@RequestParam(defaultValue = "10", required = false) Integer count,
+                                              @RequestParam() Integer filmId)
+            throws ModelNotFoundException, IncorrectParameterException {
+
+        return service.findByFilmId(Optional.ofNullable(filmId), count);
+    }
+
+
     @PutMapping("/{id}/like/{userId}")
-    public void putLikeReview(@PathVariable("id") int reviewID, @PathVariable("userId") int userId)
+    public void putLikeReview(@PathVariable("id") int reviewId, @PathVariable("userId") int userId)
             throws ModelNotFoundException {
-        service.putLikeReview(reviewID, userId);
+        service.putLikeReview(reviewId, userId);
     }
 
     @PutMapping("/{id}/dislike/{userId}")
-    public void putDislikeReview(@PathVariable("id") int reviewID, @PathVariable("userId") int userId)
+    public void putDislikeReview(@PathVariable("id") int reviewId, @PathVariable("userId") int userId)
             throws ModelNotFoundException {
-        service.putDislikeReview(reviewID, userId);
+        service.putDislikeReview(reviewId, userId);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
-    public void deleteLikeReview(@PathVariable("id") int reviewID, @PathVariable("userId") int userId)
+    public void deleteLikeReview(@PathVariable("id") int reviewId, @PathVariable("userId") int userId)
             throws ModelNotFoundException {
-        service.deleteLikeReview(reviewID, userId);
+        service.deleteLikeReview(reviewId, userId);
     }
 
     @DeleteMapping("/{id}/dislike/{userId}")
-    public void deleteDislikeReview(@PathVariable("id") int reviewID, @PathVariable("userId") int userId)
+    public void deleteDislikeReview(@PathVariable("id") int reviewId, @PathVariable("userId") int userId)
             throws ModelNotFoundException {
-        service.deleteDislikeReview(reviewID, userId);
+        service.deleteDislikeReview(reviewId, userId);
     }
 
     private String getStringErrors(BindingResult bindingResult) {

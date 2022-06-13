@@ -1,6 +1,5 @@
-package ru.yandex.practicum.filmorate.storage.rewie;
+package ru.yandex.practicum.filmorate.storage.review;
 
-import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.models.Review;
 
 import java.util.Collection;
