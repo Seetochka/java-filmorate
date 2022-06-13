@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.ModelNotFoundException;
+import ru.yandex.practicum.filmorate.models.Event;
 import ru.yandex.practicum.filmorate.models.User;
 import ru.yandex.practicum.filmorate.storage.event.EventDBStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
@@ -18,12 +19,12 @@ import java.util.Optional;
 @Slf4j
 public class UserService {
     private final UserStorage storage;
-    private final EventDBStorage eventStorage;
+    private final EventService eventService;
 
     public UserService(@Qualifier("UserDbStorage") UserStorage storage,
-                       @Qualifier("EventDBStorage") EventDBStorage eventStorage) {
+                       EventService eventService) {
         this.storage = storage;
-        this.eventStorage = eventStorage;
+        this.eventService = eventService;
     }
 
     /**
@@ -76,7 +77,11 @@ public class UserService {
         findById(userId);
         findById(friendId);
         int ret = storage.saveFriend(userId, friendId);
-        eventStorage.log(userId, "FRIEND", "ADD", friendId);
+        eventService.saveEvent(Event.builder()
+                                    .userId(userId)
+                                    .eventType("FRIEND")
+                                    .operation("ADD")
+                                    .entityId(friendId).build());
         return ret;
     }
 
@@ -87,7 +92,11 @@ public class UserService {
         findById(userId);
         findById(friendId);
         int ret = storage.deleteFriend(userId, friendId);
-        eventStorage.log(userId, "FRIEND", "REMOVE", friendId);
+        eventService.saveEvent(Event.builder()
+                                    .userId(userId)
+                                    .eventType("FRIEND")
+                                    .operation("REMOVE")
+                                    .entityId(friendId).build());
         return ret;
     }
 

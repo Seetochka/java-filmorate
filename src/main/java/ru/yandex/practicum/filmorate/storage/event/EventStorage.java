@@ -1,13 +1,12 @@
 package ru.yandex.practicum.filmorate.storage.event;
 
+import ru.yandex.practicum.filmorate.exceptions.ModelNotFoundException;
 import ru.yandex.practicum.filmorate.models.Event;
 
-import java.util.List;
+import java.util.Collection;
 
 public interface EventStorage {
-    //Получение списка всех событий пользователя
-    List<Event> getAllByUser(Integer userId);
+    Collection<Event> getAllByUser(Integer userId) throws ModelNotFoundException;
 
-    //Внесение записи о событии
-    void log(Integer userId, String eventType, String operation, Integer entityId);
+    void saveEvent(Event event);
 }

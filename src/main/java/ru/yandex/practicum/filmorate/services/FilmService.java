@@ -5,8 +5,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.exceptions.ModelNotFoundException;
+import ru.yandex.practicum.filmorate.models.Event;
 import ru.yandex.practicum.filmorate.models.Film;
-import ru.yandex.practicum.filmorate.storage.event.EventDBStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.util.Collection;
@@ -20,14 +20,14 @@ import java.util.Optional;
 public class FilmService {
     private final FilmStorage storage;
     private final UserService userService;
-    private final EventDBStorage eventStorage;
+    private final EventService eventService;
 
     public FilmService(@Qualifier("FilmDbStorage") FilmStorage storage,
                        UserService userService,
-                       @Qualifier("EventDBStorage") EventDBStorage eventStorage) {
+                       EventService eventService) {
         this.storage = storage;
         this.userService = userService;
-        this.eventStorage = eventStorage;
+        this.eventService = eventService;
     }
 
     /**
@@ -76,7 +76,11 @@ public class FilmService {
         findById(filmId);
         userService.findById(userId);
         int ret = storage.saveLike(filmId, userId);
-        eventStorage.log(userId, "LIKE", "ADD", filmId);
+        eventService.saveEvent(Event.builder()
+                                    .userId(userId)
+                                    .eventType("LIKE")
+                                    .operation("ADD")
+                                    .entityId(filmId).build());
         return ret;
     }
 
@@ -87,7 +91,11 @@ public class FilmService {
         findById(filmId);
         userService.findById(userId);
         int ret = storage.deleteLike(filmId, userId);
-        eventStorage.log(userId, "LIKE", "REMOVE", filmId);
+        eventService.saveEvent(Event.builder()
+                                    .userId(userId)
+                                    .eventType("LIKE")
+                                    .operation("REMOVE")
+                                    .entityId(filmId).build());
         return ret;
     }
 

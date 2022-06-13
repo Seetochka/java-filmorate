@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.exceptions.ModelNotFoundException;
+import ru.yandex.practicum.filmorate.models.Event;
 import ru.yandex.practicum.filmorate.models.Review;
 import ru.yandex.practicum.filmorate.storage.event.EventDBStorage;
 import ru.yandex.practicum.filmorate.storage.likeReview.LikeReviewStorage;
@@ -23,20 +24,20 @@ public class ReviewService {
     private final ReviewStorage storage;
     private final FilmService filmService;
     private final LikeReviewStorage likeReviewStorage;
-    private final EventDBStorage eventStorage;
+    private final EventService eventService;
 
     private final UserService userService;
 
     public ReviewService(ReviewStorage storage,
                          FilmService filmService,
                          LikeReviewStorage likeReviewStorage,
-                         @Qualifier("EventDBStorage") EventDBStorage eventStorage,
+                         EventService eventService,
                          UserService userService) {
 
         this.storage = storage;
         this.filmService = filmService;
         this.likeReviewStorage = likeReviewStorage;
-        this.eventStorage = eventStorage;
+        this.eventService = eventService;
         this.userService = userService;
     }
 
@@ -45,7 +46,11 @@ public class ReviewService {
      */
     public Review saveReview(Review review) {
         Review ret = storage.saveReview(review);
-        eventStorage.log(ret.getUserId(), "REVIEW", "ADD", ret.getFilmId());
+        eventService.saveEvent(Event.builder()
+                                    .userId(ret.getUserId())
+                                    .eventType("REVIEW")
+                                    .operation("ADD")
+                                    .entityId(ret.getFilmId()).build());
         return ret;
     }
 
@@ -87,8 +92,11 @@ public class ReviewService {
     public Review updateReview(Review review) throws ModelNotFoundException {
         findById(review.getReviewId());
         Review ret = storage.updateReview(review);
-        eventStorage.log(ret.getUserId(), "REVIEW", "UPDATE", ret.getFilmId());
-
+        eventService.saveEvent(Event.builder()
+                                    .userId(ret.getUserId())
+                                    .eventType("REVIEW")
+                                    .operation("UPDATE")
+                                    .entityId(ret.getFilmId()).build());
         return ret;
     }
 
@@ -99,7 +107,11 @@ public class ReviewService {
         Review review = findById(id);
 
         storage.deleteReview(id);
-        eventStorage.log(review.getUserId(), "REVIEW", "REMOVE", review.getFilmId());
+        eventService.saveEvent(Event.builder()
+                                    .userId(review.getUserId())
+                                    .eventType("REVIEW")
+                                    .operation("REMOVE")
+                                    .entityId(review.getFilmId()).build());
     }
 
     /**

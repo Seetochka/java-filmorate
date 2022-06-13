@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.models.Event;
 import ru.yandex.practicum.filmorate.services.EventService;
 
-import java.util.List;
+import java.util.Collection;
 
 @RestController
 public class EventController {
@@ -18,7 +18,7 @@ public class EventController {
 
     //Возвращает ленту событий пользователя.
     @GetMapping("/users/{id}/feed")
-    public List<Event> getFeed(@PathVariable int id){
+    public Collection<Event> getFeed(@PathVariable int id) throws Exception{
         return eventService.getAllByUser(id);
     }
 }

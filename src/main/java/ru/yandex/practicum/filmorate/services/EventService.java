@@ -1,31 +1,38 @@
 package ru.yandex.practicum.filmorate.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.storage.event.EventDBStorage;
 import ru.yandex.practicum.filmorate.models.Event;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import java.util.List;
+import java.util.Collection;
 
-//Класс для операций с событиями
+/**
+ * Класс для операций с событиями
+ */
 @Service
 public class EventService {
     private EventDBStorage eventStorage;
-    private UserStorage userStorage;
 
-    //Конструктор сервиса
+    /**
+     * Конструктор сервиса
+     */
     @Autowired
-    public EventService(@Qualifier("UserDbStorage") UserStorage userStorage,
-                        @Qualifier("EventDBStorage") EventDBStorage eventStorage){
-        this.userStorage = userStorage;
+    public EventService(EventDBStorage eventStorage){
         this.eventStorage = eventStorage;
     }
 
-    //Получение списка всех событий пользователя
-    public List<Event> getAllByUser(Integer userId){
-        userStorage.findById(userId);
+    /**
+     * Получение списка всех событий пользователя
+     */
+    public Collection<Event> getAllByUser(Integer userId) throws Exception{
         return eventStorage.getAllByUser(userId);
-    };
+    }
+
+    /**
+     * Запись события
+     */
+    public void saveEvent(Event event){
+        eventStorage.saveEvent(event);
+    }
 }

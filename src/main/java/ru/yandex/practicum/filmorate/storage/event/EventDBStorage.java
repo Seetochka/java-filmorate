@@ -1,67 +1,62 @@
 package ru.yandex.practicum.filmorate.storage.event;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.exceptions.EntityNotFoundException;
+import ru.yandex.practicum.filmorate.exceptions.ModelNotFoundException;
 import ru.yandex.practicum.filmorate.models.Event;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
-//Класс для работы с событиями
-@Component("EventDBStorage")
+@Slf4j
 @Repository
 public class EventDBStorage implements EventStorage {
-    protected static final Logger log = LoggerFactory.getLogger(EventDBStorage.class);
     private final JdbcTemplate jdbcTemplate;
 
-    //Конструктор класса
     public EventDBStorage(JdbcTemplate jdbcTemplate){
         this.jdbcTemplate=jdbcTemplate;
     }
 
-    //Получение списка всех событий пользователя
     @Override
-    public List<Event> getAllByUser(Integer userId) {
-        List<Event> ret = new ArrayList<>();
+    public Collection<Event> getAllByUser(Integer userId) throws ModelNotFoundException {
+        Collection<Event> ret = new ArrayList<>();
         try{
             SqlRowSet eventRows = jdbcTemplate.queryForRowSet("select * from event where user_id = ?", userId);
 
             while (eventRows.next()) {
-                ret.add(new Event(eventRows.getInt("event_id"),
-                                  eventRows.getTimestamp("time_stamp").toInstant().getEpochSecond(),
-                                  eventRows.getInt("user_id"),
-                                  eventRows.getString("event_type"),
-                                  eventRows.getString("operation"),
-                                  eventRows.getInt("entity_id")));
+                ret.add(Event.builder()
+                        .eventId(eventRows.getInt("event_id"))
+                        .timestamp(eventRows.getTimestamp("time_stamp").toInstant().getEpochSecond())
+                        .userId(eventRows.getInt("user_id"))
+                        .eventType(eventRows.getString("event_type"))
+                        .operation(eventRows.getString("operation"))
+                        .entityId(eventRows.getInt("entity_id"))
+                        .build());
             }
 
             return ret;
 
         } catch (EmptyResultDataAccessException e) {
             log.error("Не найдено событий для пользователя " + userId);
-            throw new EntityNotFoundException("Не найдено событий для пользователя " + userId);
+            throw new ModelNotFoundException("Не найдено событий для пользователя " + userId);
         }
     }
 
-    //Внесение записи о событии
     @Override
-    public void log(Integer userId, String eventType, String operation, Integer entityId) {
+    public void saveEvent(Event event) {
         try {
             jdbcTemplate.update("insert into event (user_id, event_type, operation, entity_id) values (?,?,?,?)",
-                    userId, eventType, operation, entityId);
+                    event.getUserId(), event.getEventType(), event.getOperation(), event.getEntityId());
 
         }catch (DataIntegrityViolationException e){
-            log.error("Ошибка логирования события userId = " + userId +
-                    ", eventType = " + eventType +
-                    ", operation = " + operation +
-                    ", entityId = " + entityId);
+            log.error("Ошибка логирования события userId = " + event.getUserId() +
+                    ", eventType = " + event.getEventType() +
+                    ", operation = " + event.getOperation() +
+                    ", entityId = " + event.getEntityId());
         }
     }
 }
