@@ -155,9 +155,6 @@ public class FilmDbStorage implements FilmStorage {
             log.error("UpdateFilm. {}", message);
             throw new RuntimeException(message);
         }
-        if (film.getDirectors() != null) {
-            film.setDirectors(saveDirectorFilm(film)); // положили режиссёра фильма в таблицу film_director
-        }
 
         return film;
     }
