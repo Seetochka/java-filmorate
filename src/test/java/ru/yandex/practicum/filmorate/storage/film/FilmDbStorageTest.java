@@ -5,10 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.yandex.practicum.filmorate.exceptions.ModelNotFoundException;
 import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.models.Mpa;
-import ru.yandex.practicum.filmorate.models.User;
 import ru.yandex.practicum.filmorate.storage.mpa.MpaDbStorage;
 
 import java.time.LocalDate;
@@ -95,7 +93,7 @@ class FilmDbStorageTest {
     }
 
     @Test
-    void testUpdateFilm() throws ModelNotFoundException {
+    void testUpdateFilm() {
         Optional<Film> filmOptional = filmStorage.findById(2);
         assertThat(filmOptional).isPresent();
 
@@ -140,13 +138,13 @@ class FilmDbStorageTest {
 
     @Test
     void testFindPopularFilms() {
-        Optional<Film> filmOptional1 = filmStorage.findById(3);
-        Optional<Film> filmOptional2 = filmStorage.findById(1);
+        Optional<Film> filmOptional1 = filmStorage.findById(1);
+        Optional<Film> filmOptional2 = filmStorage.findById(2);
         assertThat(filmOptional1).isPresent();
         assertThat(filmOptional2).isPresent();
 
-        filmStorage.saveLike(3, 1);
-        filmStorage.saveLike(3, 2);
+        filmStorage.saveLike(1, 1);
+        filmStorage.saveLike(1, 2);
 
         Collection<Film> popularFilms = filmStorage.findPopularFilms(2, Optional.empty(), Optional.empty());
 
@@ -158,7 +156,7 @@ class FilmDbStorageTest {
     void testFindCommonFilms() {
         Collection<Film> commonFilms = filmStorage.findCommonFilms(1,2);
 
-        assertThat(commonFilms).hasSize(1);
+        assertThat(commonFilms).hasSize(2);
         assertThat(filmStorage.findById(2).get().getId()).isEqualTo(2);
     }
 }
