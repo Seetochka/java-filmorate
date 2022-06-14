@@ -10,7 +10,7 @@ public interface DirectorStorage {
     /**
      * Создание режиссёра
      */
-    Director createDirector(Director director);
+    Director saveDirector(Director director);
 
     /**
      * Обновление данных режиссёра

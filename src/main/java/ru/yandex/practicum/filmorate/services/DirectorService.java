@@ -30,7 +30,7 @@ public class DirectorService {
      * Создание режиссёра
      */
     public Director saveDirector(Director director) {
-        return directorDbStorage.createDirector(director);
+        return directorDbStorage.saveDirector(director);
     }
 
     /**
@@ -45,18 +45,10 @@ public class DirectorService {
     /**
      * Удаление режиссёра
      */
-    public String deleteDirector(String id) throws ModelNotFoundException, ValidationException {
-        try {
-            Integer.parseInt(id);
-        } catch (NumberFormatException e) {
-            String message = "Введён неверный формат id";
-            log.error("deleteDirector. {}", message);
-            throw new RuntimeException(message);
-        }
+    public String deleteDirector(int id) throws ModelNotFoundException, ValidationException {
+        findDirectorById(id);
 
-        findDirectorById(Integer.parseInt(id));
-
-        Collection<Film> filmsWithDirector = filmDbStorage.findFilmsByDirector(Integer.parseInt(id), LIKES);
+        Collection<Film> filmsWithDirector = filmDbStorage.findFilmsByDirector(id, LIKES);
 
         List<Integer> filmsId = new ArrayList<>();
         filmsWithDirector.forEach(f -> filmsId.add(f.getId()));
@@ -66,7 +58,7 @@ public class DirectorService {
             throw new ValidationException(message);
         }
 
-        return directorDbStorage.deleteDirector(Integer.parseInt(id));
+        return directorDbStorage.deleteDirector(id);
     }
 
     /**

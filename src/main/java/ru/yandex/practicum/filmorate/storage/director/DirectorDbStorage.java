@@ -25,14 +25,13 @@ public class DirectorDbStorage implements DirectorStorage {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Director createDirector(Director director) {
+    public Director saveDirector(Director director) {
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         String sqlAddDirector = "INSERT INTO director (name) VALUES (?)";
 
         try {
-
             jdbcTemplate.update(connection -> {
                 PreparedStatement stmt = connection.prepareStatement(sqlAddDirector, new String[]{"id"});
                 stmt.setString(1, director.getName());
@@ -52,7 +51,7 @@ public class DirectorDbStorage implements DirectorStorage {
 
         try {
             jdbcTemplate.update(sqlUpdDirector, director.getName(), director.getId());
-            log.info("Данные режиссёра {} успешно обновлены", director.getName());
+            log.info("Данные режиссёра {} {} успешно обновлены", director.getId(), director.getName());
         } catch (EmptyResultDataAccessException e) {
             return null;
         } catch (Exception e) {

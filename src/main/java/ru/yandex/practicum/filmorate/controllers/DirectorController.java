@@ -41,8 +41,8 @@ public class DirectorController {
      * Получение режиссёра по id
      */
     @GetMapping("/{id}")
-    public Director findDirectorById(@PathVariable String id) throws ModelNotFoundException {
-        return directorService.findDirectorById(Integer.parseInt(id));
+    public Director findDirectorById(@PathVariable int id) throws ModelNotFoundException {
+        return directorService.findDirectorById(id);
     }
 
     /**
@@ -74,7 +74,7 @@ public class DirectorController {
      */
     @DeleteMapping(value = {"/{id}"})
     @ResponseBody
-    public String deleteDirector(@PathVariable(required = false) String id) throws ModelNotFoundException, IncorrectParameterException, ValidationException {
+    public String deleteDirector(@PathVariable(required = false) int id) throws ModelNotFoundException, IncorrectParameterException, ValidationException {
         return directorService.deleteDirector(id);
 
     }

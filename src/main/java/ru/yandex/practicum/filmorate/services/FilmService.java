@@ -119,10 +119,10 @@ public class FilmService {
     /**
      * Поиск фильма по содержащейся строке в названии фильма или в имени режиссёра
      */
-    public Collection<Film> searchFilmsByTitleAndDirector(String query, String by) throws IncorrectParameterException {
+    public Collection<Film> findFilmsByTitleAndDirector(String query, String by) throws IncorrectParameterException {
         if (by.equals(TITLE) || by.equals(DIRECTOR) ||
                 by.equals(TITLE_AND_DIRECTOR) || by.equals(DIRECTOR_AND_TITLE)) {
-            return storage.searchFilmsByTitleAndDirector(query, by);
+            return storage.findFilmsByTitleAndDirector(query, by);
         } else {
             log.warn("searchFilmsByTitleAndDirector. Передан неверный параметр by {}", by);
             throw new IncorrectParameterException("by");
@@ -132,20 +132,11 @@ public class FilmService {
     /**
      * Получение списка фильмов по id режиссёра
      */
-    public Collection<Film> findFilmsByDirector(String directorId, String sortBy) throws IncorrectParameterException, ModelNotFoundException {
-
-        try {
-            Integer.parseInt(directorId);
-        } catch (NumberFormatException e) {
-            String message = "Введён неверный формат id";
-            log.error("findFilmsByDirector. {}", message);
-            throw new RuntimeException(message);
-        }
-
-        directorService.findDirectorById(Integer.parseInt(directorId));
+    public Collection<Film> findFilmsByDirector(int directorId, String sortBy) throws IncorrectParameterException, ModelNotFoundException {
+        directorService.findDirectorById(directorId);
 
         if (sortBy.equals(LIKES) || sortBy.equals(YEAR)) {
-            return storage.findFilmsByDirector(Integer.parseInt(directorId), sortBy);
+            return storage.findFilmsByDirector(directorId, sortBy);
         } else {
             log.warn("findFilmsByDirector. Передан неверный параметр sortBy {}", sortBy);
             throw new IncorrectParameterException("sortBy");

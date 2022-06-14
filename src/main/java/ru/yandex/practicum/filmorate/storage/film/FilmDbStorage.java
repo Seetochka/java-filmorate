@@ -297,7 +297,7 @@ public class FilmDbStorage implements FilmStorage {
 
     // поиск фильма по содержащейся строке в названии фильма или в имени режиссёра
     @Override
-    public Collection<Film> searchFilmsByTitleAndDirector(String query, String by) {
+    public Collection<Film> findFilmsByTitleAndDirector(String query, String by) {
         String sqlTitle = "WHERE UPPER (f.name) LIKE '%" + query.toUpperCase() + "%' ";
         String sqlDirector = "WHERE UPPER (d.name) LIKE '%" + query.toUpperCase() + "%' ";
         String sqlDirectorAndTitle = "WHERE UPPER (d.name) LIKE '%" + query.toUpperCase() + "%' " +

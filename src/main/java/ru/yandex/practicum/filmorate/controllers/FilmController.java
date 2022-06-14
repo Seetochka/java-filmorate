@@ -92,10 +92,10 @@ public class FilmController {
      */
     @GetMapping("/search")
     @ResponseBody
-    public Collection<Film> searchFilmsByTitleAndDirector(@RequestParam String query,
-                                                          @RequestParam String by)
+    public Collection<Film> findFilmsByTitleAndDirector(@RequestParam String query,
+                                                        @RequestParam String by)
             throws IncorrectParameterException {
-        return service.searchFilmsByTitleAndDirector(query, by);
+        return service.findFilmsByTitleAndDirector(query, by);
     }
 
     /**
@@ -103,8 +103,8 @@ public class FilmController {
      */
     @GetMapping("/director/{directorId}")
     @ResponseBody
-    public Collection<Film> getFilmsByDirector(@PathVariable String directorId,
-                                               @RequestParam String sortBy)
+    public Collection<Film> findFilmsByDirector(@PathVariable int directorId,
+                                                @RequestParam String sortBy)
             throws IncorrectParameterException, ModelNotFoundException {
 
         return service.findFilmsByDirector(directorId, sortBy);
