@@ -100,18 +100,8 @@ public class FilmService {
      * Получение общих фильмов друзей
      */
     public Collection<Film> findCommonFilms(int userId, int friendId) throws ModelNotFoundException {
-        if(userService.findById(userId) == null) {
-            String message = String.format("Пользователь с id %d не найден", userId);
-
-            log.warn("findCommonFilms. {}", message);
-            throw new ModelNotFoundException(message);
-        }
-        if(userService.findById(friendId) == null) {
-            String message = String.format("Пользователь с id %d не найден", friendId);
-
-            log.warn("findCommonFilms. {}", message);
-            throw new ModelNotFoundException(message);
-        }
+        userService.findById(userId);
+        userService.findById(friendId);
         return storage.findCommonFilms(userId, friendId);
     }
 }
