@@ -56,7 +56,7 @@ public class DirectorDbStorage implements DirectorStorage {
             return null;
         } catch (Exception e) {
             String message = "Не удалось получить режиссёра";
-            log.warn("updateDirector. {}", message);
+            log.error("updateDirector. {}", message);
             throw new RuntimeException(message);
         }
 
@@ -71,7 +71,7 @@ public class DirectorDbStorage implements DirectorStorage {
             log.info("Режиссёр с id {} удалён", id);
         } catch (Exception e) {
             String message = "Не удалось удалить режиссёра";
-            log.warn("deleteDirector. {}", message);
+            log.error("deleteDirector. {}", message);
             throw new RuntimeException(message);
         }
     }
@@ -86,7 +86,7 @@ public class DirectorDbStorage implements DirectorStorage {
         } catch (Exception e) {
             String message = "Не удалось получить список режиссёров";
 
-            log.warn("findAllDirectors. {}", message);
+            log.error("findAllDirectors. {}", message);
             throw new RuntimeException(message);
         }
     }

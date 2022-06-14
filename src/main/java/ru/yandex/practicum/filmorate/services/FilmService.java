@@ -133,7 +133,7 @@ public class FilmService {
                 by.equals(TITLE_AND_DIRECTOR) || by.equals(DIRECTOR_AND_TITLE)) {
             return storage.findFilmsByTitleAndDirector(query, by);
         } else {
-            log.warn("searchFilmsByTitleAndDirector. Передан неверный параметр by {}", by);
+            log.error("searchFilmsByTitleAndDirector. Передан неверный параметр by {}", by);
             throw new IncorrectParameterException("by");
         }
     }
@@ -147,7 +147,7 @@ public class FilmService {
         if (sortBy.equals(LIKES) || sortBy.equals(YEAR)) {
             return storage.findFilmsByDirector(directorId, sortBy);
         } else {
-            log.warn("findFilmsByDirector. Передан неверный параметр sortBy {}", sortBy);
+            log.error("findFilmsByDirector. Передан неверный параметр sortBy {}", sortBy);
             throw new IncorrectParameterException("sortBy");
         }
 
