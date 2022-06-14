@@ -16,7 +16,7 @@ import java.util.Optional;
 
 /**
  * Контроллер для работы с фильмами
-*/
+ */
 @RestController
 @RequestMapping("/films")
 @Slf4j
@@ -25,7 +25,7 @@ public class FilmController {
     private final FilmService service;
 
     @PostMapping
-    public Film saveFilm(@Valid @RequestBody Film film, BindingResult bindingResult) throws ValidationException {
+    public Film saveFilm(@Valid @RequestBody Film film, BindingResult bindingResult) throws ValidationException, ModelNotFoundException {
         if (bindingResult.hasErrors()) {
             String message = getStringErrors(bindingResult);
 
@@ -92,6 +92,31 @@ public class FilmController {
                                              @RequestParam(required = false) Optional<Integer> genreId)
             throws IncorrectParameterException {
         return service.findPopularFilms(count, genreId, year);
+    }
+
+
+    /**
+     * Возвращает список фильмов включающих в название фильма или в имени режиссёра указанную подстроку
+     */
+    @GetMapping("/search")
+    @ResponseBody
+    public Collection<Film> findFilmsByTitleAndDirector(@RequestParam String query,
+                                                        @RequestParam String by)
+            throws IncorrectParameterException {
+        return service.findFilmsByTitleAndDirector(query, by);
+    }
+
+    /**
+     * Возвращает список фильмов режиссера отсортированных по количеству лайков или/и году выпуска
+     */
+    @GetMapping("/director/{directorId}")
+    @ResponseBody
+    public Collection<Film> findFilmsByDirector(@PathVariable int directorId,
+                                                @RequestParam String sortBy)
+            throws IncorrectParameterException, ModelNotFoundException {
+
+        return service.findFilmsByDirector(directorId, sortBy);
+
     }
 
     private String getStringErrors(BindingResult bindingResult) {

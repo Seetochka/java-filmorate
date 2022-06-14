@@ -63,6 +63,19 @@ CREATE TABLE IF NOT EXISTS `film_genre`
     PRIMARY KEY (film_id, genre_id)
 );
 
+CREATE TABLE IF NOT EXISTS `director`
+(
+    id           int AUTO_INCREMENT PRIMARY KEY NOT NULL,
+    name         varchar(200) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS `film_director`
+(
+    id           int AUTO_INCREMENT PRIMARY KEY NOT NULL,
+    film_id      int NOT NULL,
+    director_id  int NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS `review`
 (
     id          int AUTO_INCREMENT PRIMARY KEY NOT NULL,
@@ -118,6 +131,12 @@ ALTER TABLE IF EXISTS film_genre
 
 ALTER TABLE IF EXISTS film_genre
     ADD FOREIGN KEY (genre_id) REFERENCES `genre` (id);
+
+ALTER TABLE IF EXISTS film_director
+    ADD FOREIGN KEY (film_id) REFERENCES `film` (id);
+
+ALTER TABLE IF EXISTS film_director
+    ADD FOREIGN KEY (director_id) REFERENCES `director` (id);
 
 ALTER TABLE IF EXISTS review
     ADD FOREIGN KEY (user_id) REFERENCES `user` (id);

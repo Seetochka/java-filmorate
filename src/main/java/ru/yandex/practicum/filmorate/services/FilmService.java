@@ -5,11 +5,15 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.exceptions.ModelNotFoundException;
+import ru.yandex.practicum.filmorate.models.Director;
 import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.util.Collection;
 import java.util.Optional;
+
+import static ru.yandex.practicum.filmorate.constants.Constant.*;
+
 
 /**
  * Сервис фильмов
@@ -19,16 +23,25 @@ import java.util.Optional;
 public class FilmService {
     private final FilmStorage storage;
     private final UserService userService;
+    private final DirectorService directorService;
 
-    public FilmService(@Qualifier("filmDbStorage") FilmStorage storage, UserService userService) {
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage storage, UserService userService, DirectorService directorService) {
         this.storage = storage;
         this.userService = userService;
+        this.directorService = directorService;
     }
 
     /**
      * Сохранение фильма
      */
-    public Film saveFilm(Film film) {
+    public Film saveFilm(Film film) throws ModelNotFoundException {
+
+        if (film.getDirectors() != null) {
+            // проверяем что у фильма указан id существующего режиссёра
+            for (Director director : film.getDirectors()) {
+                directorService.findDirectorById(director.getId());
+            }
+        }
         return storage.saveFilm(film);
     }
 
@@ -70,6 +83,13 @@ public class FilmService {
     public Film updateFilm(Film film) throws ModelNotFoundException {
         findById(film.getId());
 
+        if (film.getDirectors() != null) {
+            // проверяем что у фильма указан id существующего режиссёра
+            for (Director director : film.getDirectors()) {
+                directorService.findDirectorById(director.getId());
+            }
+        }
+
         return storage.updateFilm(film);
     }
 
@@ -103,5 +123,33 @@ public class FilmService {
         }
 
         return storage.findPopularFilms(count, genreId, year);
+    }
+
+    /**
+     * Поиск фильма по содержащейся строке в названии фильма или в имени режиссёра
+     */
+    public Collection<Film> findFilmsByTitleAndDirector(String query, String by) throws IncorrectParameterException {
+        if (by.equals(TITLE) || by.equals(DIRECTOR) ||
+                by.equals(TITLE_AND_DIRECTOR) || by.equals(DIRECTOR_AND_TITLE)) {
+            return storage.findFilmsByTitleAndDirector(query, by);
+        } else {
+            log.error("searchFilmsByTitleAndDirector. Передан неверный параметр by {}", by);
+            throw new IncorrectParameterException("by");
+        }
+    }
+
+    /**
+     * Получение списка фильмов по id режиссёра
+     */
+    public Collection<Film> findFilmsByDirector(int directorId, String sortBy) throws IncorrectParameterException, ModelNotFoundException {
+        directorService.findDirectorById(directorId);
+
+        if (sortBy.equals(LIKES) || sortBy.equals(YEAR)) {
+            return storage.findFilmsByDirector(directorId, sortBy);
+        } else {
+            log.error("findFilmsByDirector. Передан неверный параметр sortBy {}", sortBy);
+            throw new IncorrectParameterException("sortBy");
+        }
+
     }
 }
