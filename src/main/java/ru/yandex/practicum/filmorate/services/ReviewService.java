@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.exceptions.ModelNotFoundException;
+import ru.yandex.practicum.filmorate.models.Event;
 import ru.yandex.practicum.filmorate.models.Review;
 import ru.yandex.practicum.filmorate.storage.likeReview.LikeReviewStorage;
 import ru.yandex.practicum.filmorate.storage.review.ReviewStorage;
@@ -23,14 +24,20 @@ public class ReviewService {
     private final ReviewStorage storage;
     private final FilmService filmService;
     private final LikeReviewStorage likeReviewStorage;
-
+    private final EventService eventService;
     private final UserService userService;
 
     /**
      * Сохранение отзыва
      */
     public Review saveReview(Review review) {
-        return storage.saveReview(review);
+        Review ret = storage.saveReview(review);
+        eventService.saveEvent(Event.builder()
+                                    .userId(ret.getUserId())
+                                    .eventType("REVIEW")
+                                    .operation("ADD")
+                                    .entityId(ret.getFilmId()).build());
+        return ret;
     }
 
     /**
@@ -69,17 +76,27 @@ public class ReviewService {
      */
     public Review updateReview(Review review) throws ModelNotFoundException {
         findById(review.getReviewId());
-
-        return storage.updateReview(review);
+        Review ret = storage.updateReview(review);
+        eventService.saveEvent(Event.builder()
+                                    .userId(ret.getUserId())
+                                    .eventType("REVIEW")
+                                    .operation("UPDATE")
+                                    .entityId(ret.getFilmId()).build());
+        return ret;
     }
 
     /**
      * Удаление отзыва
      */
     public void deleteFilm(int id) throws ModelNotFoundException {
-        findById(id);
+        Review review = findById(id);
 
         storage.deleteReview(id);
+        eventService.saveEvent(Event.builder()
+                                    .userId(review.getUserId())
+                                    .eventType("REVIEW")
+                                    .operation("REMOVE")
+                                    .entityId(review.getFilmId()).build());
     }
 
     /**

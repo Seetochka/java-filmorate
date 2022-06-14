@@ -42,6 +42,19 @@ public class ReviewController {
         return createdReview;
     }
 
+    @GetMapping()
+    public Collection<Review> findAllByFilmId(@RequestParam(defaultValue = "10", required = false) Integer count,
+                                              @RequestParam(required = false) Integer filmId)
+            throws ModelNotFoundException, IncorrectParameterException {
+
+        return service.findByFilmId(Optional.ofNullable(filmId), count);
+    }
+
+    @GetMapping("/{id}")
+    public Review findById(@PathVariable("id") int reviewId) throws ModelNotFoundException {
+        return service.findById(reviewId);
+    }
+
     @PutMapping
     public Review updateReview(@Valid @RequestBody Review review, BindingResult bindingResult)
             throws ValidationException, ModelNotFoundException {
@@ -62,20 +75,6 @@ public class ReviewController {
     public void deleteReview(@PathVariable("id") int reviewId) throws ModelNotFoundException {
         service.deleteFilm(reviewId);
     }
-
-    @GetMapping("/{id}")
-    public Review findById(@PathVariable("id") int reviewId) throws ModelNotFoundException {
-        return service.findById(reviewId);
-    }
-
-    @GetMapping()
-    public Collection<Review> findAllByFilmId(@RequestParam(defaultValue = "10", required = false) Integer count,
-                                              @RequestParam() Integer filmId)
-            throws ModelNotFoundException, IncorrectParameterException {
-
-        return service.findByFilmId(Optional.ofNullable(filmId), count);
-    }
-
 
     @PutMapping("/{id}/like/{userId}")
     public void putLikeReview(@PathVariable("id") int reviewId, @PathVariable("userId") int userId)
