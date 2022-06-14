@@ -61,7 +61,7 @@ public class UserDbStorage implements UserStorage {
             User user = jdbcTemplate.queryForObject(sqlQuery, this::mapRowToUser, id);
 
             return Optional.ofNullable(user);
-        }  catch (EmptyResultDataAccessException e) {
+        } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         } catch (Exception e) {
             String message = "Не удалось получить пользователя";
@@ -73,7 +73,7 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public void deleteUser(int id) {
-        String sqlQuery ="DELETE FROM user WHERE id = ?";
+        String sqlQuery = "DELETE FROM user WHERE id = ?";
 
         try {
             jdbcTemplate.update(sqlQuery, id);
@@ -272,7 +272,7 @@ public class UserDbStorage implements UserStorage {
                 "WHERE (user_id = ?) OR (friend_id = ? AND status = 1)";
 
         try {
-            SqlRowSet countRows =  jdbcTemplate.queryForRowSet(sqlQuery, userId, userId);
+            SqlRowSet countRows = jdbcTemplate.queryForRowSet(sqlQuery, userId, userId);
 
             if (countRows.next()) {
                 return countRows.getInt("countFriends");

@@ -27,12 +27,12 @@ public class DirectorController {
         if (bindingResult.hasErrors()) {
             String message = getStringErrors(bindingResult);
 
-            log.warn("saveDirector. {}", message);
+            log.warn("SaveDirector. {}", message);
             throw new ValidationException(message);
         }
         Director createdDirector = directorService.saveDirector(director);
 
-        log.info("saveDirector. Режиссёр с id {} успешно добавлен", createdDirector.getId());
+        log.info("SaveDirector. Режиссёр с id {} успешно добавлен", createdDirector.getId());
         return createdDirector;
     }
 
@@ -60,11 +60,11 @@ public class DirectorController {
             throws ValidationException, ModelNotFoundException {
         if (bindingResult.hasErrors()) {
             String message = getStringErrors(bindingResult);
-            log.warn("updateDirector. " + message);
+            log.warn("UpdateDirector. " + message);
             throw new ValidationException(message);
         }
         Director updDirector = directorService.updateDirector(director);
-        log.info("updateDirector. Режиссёр с id {} успешно обновлён", updDirector.getId());
+        log.info("UpdateDirector. Режиссёр с id {} успешно обновлён", updDirector.getId());
         return updDirector;
     }
 

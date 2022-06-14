@@ -117,6 +117,7 @@ public class ReviewService {
             likeReviewStorage.put(reviewId, userId, true);
             review.setUseful(review.getUseful() + 1);
         }
+
         storage.updateReview(review);
     }
 
@@ -128,6 +129,7 @@ public class ReviewService {
         userService.findById(userId);
 
         Optional<Boolean> status = likeReviewStorage.getStatus(reviewId, userId);
+
         if (status.isPresent()) {
             if (status.get()) {
                 likeReviewStorage.update(reviewId, userId, false);
@@ -137,6 +139,7 @@ public class ReviewService {
             likeReviewStorage.put(reviewId, userId, false);
             review.setUseful(review.getUseful() - 1);
         }
+
         storage.updateReview(review);
     }
 
@@ -148,6 +151,7 @@ public class ReviewService {
         userService.findById(userId);
 
         Optional<Boolean> status = likeReviewStorage.getStatus(reviewId, userId);
+
         if (status.isPresent()) {
             if (status.get()) {
                 likeReviewStorage.delete(reviewId, userId);
@@ -159,6 +163,7 @@ public class ReviewService {
             log.error("DeleteLikeReview. {}", message);
             throw new ModelNotFoundException(message);
         }
+
         storage.updateReview(review);
     }
 
@@ -170,6 +175,7 @@ public class ReviewService {
         userService.findById(userId);
 
         Optional<Boolean> status = likeReviewStorage.getStatus(reviewId, userId);
+
         if (status.isPresent()) {
             if (!status.get()) {
                 likeReviewStorage.delete(reviewId, userId);
@@ -180,6 +186,7 @@ public class ReviewService {
             log.error("DeleteLikeReview. {}", message);
             throw new ModelNotFoundException(message);
         }
+
         storage.updateReview(review);
     }
 }

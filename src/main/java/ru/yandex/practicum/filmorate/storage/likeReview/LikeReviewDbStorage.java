@@ -8,12 +8,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-
 @Component
 @Slf4j
 @RequiredArgsConstructor
 public class LikeReviewDbStorage implements LikeReviewStorage {
-
     private final JdbcTemplate jdbcTemplate;
 
     @Override
@@ -33,6 +31,7 @@ public class LikeReviewDbStorage implements LikeReviewStorage {
     @Override
     public void delete(int reviewId, int userId) {
         String sqlQuery = "DELETE FROM like_review WHERE review_id = ? AND user_id = ?";
+
         try {
             jdbcTemplate.update(sqlQuery, reviewId, userId);
         } catch (Exception e) {
@@ -45,12 +44,12 @@ public class LikeReviewDbStorage implements LikeReviewStorage {
 
     @Override
     public Optional<Boolean> getStatus(int reviewId, int userId) {
-
         String sqlQuery = "SELECT is_like FROM like_review WHERE review_id = ? AND user_id = ?";
 
         try {
             SqlRowSet rs = jdbcTemplate.queryForRowSet(sqlQuery, reviewId, userId);
-            if(rs.next()) {
+
+            if (rs.next()) {
                 return Optional.of(rs.getBoolean("is_like"));
             } else {
                 return Optional.empty();
@@ -76,5 +75,4 @@ public class LikeReviewDbStorage implements LikeReviewStorage {
             throw new RuntimeException(message);
         }
     }
-
 }

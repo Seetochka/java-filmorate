@@ -22,7 +22,7 @@ public class RecommendationService {
     private final FilmStorage filmStorage;
     private final LikeStorage likeStorage;
 
-    public RecommendationService(@Qualifier("filmDbStorage") FilmStorage filmStorage, LikeStorage likeStorage) {
+    public RecommendationService(@Qualifier("FilmDbStorage") FilmStorage filmStorage, LikeStorage likeStorage) {
         this.filmStorage = filmStorage;
         this.likeStorage = likeStorage;
     }
@@ -101,7 +101,7 @@ public class RecommendationService {
     private Set<Integer> prepareRecommendation(Map<Integer, Set<Integer>> recommendLikes) {
         Set<Integer> filmIds = new LinkedHashSet<>();
 
-        for (Set<Integer> likes: recommendLikes.values()) {
+        for (Set<Integer> likes : recommendLikes.values()) {
             filmIds.addAll(likes);
         }
 

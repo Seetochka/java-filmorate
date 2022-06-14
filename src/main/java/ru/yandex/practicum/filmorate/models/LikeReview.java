@@ -9,8 +9,8 @@ import javax.validation.constraints.NotNull;
 @Builder
 public class LikeReview {
     @NotNull
-    int userId;
+    private int userId;
     @NotNull
-    int reviewId;
-    boolean isLike;
+    private int reviewId;
+    private boolean isLike;
 }

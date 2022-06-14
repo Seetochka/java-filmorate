@@ -29,7 +29,7 @@ public class MpaDbStorage implements MpaStorage {
             Mpa mpa = jdbcTemplate.queryForObject(sqlQuery, this::mapRowToMpa, id);
 
             return Optional.ofNullable(mpa);
-        }  catch (EmptyResultDataAccessException e) {
+        } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         } catch (Exception e) {
             String message = "Не удалось получить рейтинг";

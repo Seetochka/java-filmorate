@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.Optional;
 
 public interface DirectorStorage {
-
     /**
      * Создание режиссёра
      */

@@ -14,17 +14,14 @@ import javax.validation.Valid;
 import java.util.Collection;
 import java.util.Optional;
 
-
 /**
  * Контроллер для работы с отзывами
  */
-
 @RestController
 @RequestMapping("/reviews")
 @Slf4j
 @RequiredArgsConstructor
 public class ReviewController {
-
     private final ReviewService service;
 
     @PostMapping
@@ -46,7 +43,6 @@ public class ReviewController {
     public Collection<Review> findAllByFilmId(@RequestParam(defaultValue = "10", required = false) Integer count,
                                               @RequestParam(required = false) Integer filmId)
             throws ModelNotFoundException, IncorrectParameterException {
-
         return service.findByFilmId(Optional.ofNullable(filmId), count);
     }
 

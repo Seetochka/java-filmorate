@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.Optional;
 
 public interface ReviewStorage {
-
     /**
      * Сохранение отзыва
      */

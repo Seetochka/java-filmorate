@@ -94,7 +94,6 @@ public class FilmController {
         return service.findPopularFilms(count, genreId, year);
     }
 
-
     /**
      * Возвращает список фильмов включающих в название фильма или в имени режиссёра указанную подстроку
      */
@@ -114,9 +113,7 @@ public class FilmController {
     public Collection<Film> findFilmsByDirector(@PathVariable int directorId,
                                                 @RequestParam String sortBy)
             throws IncorrectParameterException, ModelNotFoundException {
-
         return service.findFilmsByDirector(directorId, sortBy);
-
     }
 
     private String getStringErrors(BindingResult bindingResult) {

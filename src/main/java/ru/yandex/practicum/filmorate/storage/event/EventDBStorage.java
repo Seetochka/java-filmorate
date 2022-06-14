@@ -22,7 +22,8 @@ public class EventDBStorage implements EventStorage {
     @Override
     public Collection<Event> getAllByUser(Integer userId) throws ModelNotFoundException {
         Collection<Event> ret = new ArrayList<>();
-        try{
+
+        try {
             SqlRowSet eventRows = jdbcTemplate.queryForRowSet("select * from event where user_id = ?", userId);
 
             while (eventRows.next()) {
@@ -37,7 +38,6 @@ public class EventDBStorage implements EventStorage {
             }
 
             return ret;
-
         } catch (EmptyResultDataAccessException e) {
             log.error("Не найдено событий для пользователя " + userId);
             throw new ModelNotFoundException("Не найдено событий для пользователя " + userId);
@@ -49,8 +49,7 @@ public class EventDBStorage implements EventStorage {
         try {
             jdbcTemplate.update("insert into event (user_id, event_type, operation, entity_id) values (?,?,?,?)",
                     event.getUserId(), event.getEventType(), event.getOperation(), event.getEntityId());
-
-        }catch (DataIntegrityViolationException e){
+        } catch (DataIntegrityViolationException e) {
             log.error("Ошибка логирования события userId = " + event.getUserId() +
                     ", eventType = " + event.getEventType() +
                     ", operation = " + event.getOperation() +
