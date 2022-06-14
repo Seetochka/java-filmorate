@@ -45,7 +45,7 @@ public class DirectorService {
     /**
      * Удаление режиссёра
      */
-    public String deleteDirector(int id) throws ModelNotFoundException, ValidationException {
+    public void deleteDirector(int id) throws ModelNotFoundException, ValidationException {
         findDirectorById(id);
 
         Collection<Film> filmsWithDirector = filmDbStorage.findFilmsByDirector(id, LIKES);
@@ -58,7 +58,7 @@ public class DirectorService {
             throw new ValidationException(message);
         }
 
-        return directorDbStorage.deleteDirector(id);
+        directorDbStorage.deleteDirector(id);
     }
 
     /**

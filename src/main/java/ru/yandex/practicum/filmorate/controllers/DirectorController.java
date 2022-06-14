@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exceptions.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.exceptions.ModelNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.models.Director;
@@ -74,8 +73,8 @@ public class DirectorController {
      */
     @DeleteMapping(value = {"/{id}"})
     @ResponseBody
-    public String deleteDirector(@PathVariable(required = false) int id) throws ModelNotFoundException, IncorrectParameterException, ValidationException {
-        return directorService.deleteDirector(id);
+    public void deleteDirector(@PathVariable(required = false) int id) throws ModelNotFoundException, ValidationException {
+        directorService.deleteDirector(id);
 
     }
 

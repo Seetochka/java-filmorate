@@ -20,7 +20,7 @@ public interface DirectorStorage {
     /**
      * Удаление режиссёра
      */
-    String deleteDirector(int id);
+    void deleteDirector(int id);
 
     /**
      * Получение списка всех режиссёров

@@ -63,21 +63,17 @@ public class DirectorDbStorage implements DirectorStorage {
         return director;
     }
 
-    public String deleteDirector(int id) {
+    public void deleteDirector(int id) {
         String sqlDeleteDirector = "DELETE FROM director WHERE id = ?";
 
         try {
             jdbcTemplate.update(sqlDeleteDirector, id);
             log.info("Режиссёр с id {} удалён", id);
-        } catch (EmptyResultDataAccessException e) {
-            return null;
         } catch (Exception e) {
             String message = "Не удалось удалить режиссёра";
             log.warn("deleteDirector. {}", message);
             throw new RuntimeException(message);
         }
-
-        return String.format("Режиссёр с id %d удалён", id);
     }
 
     @Override
