@@ -91,7 +91,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> getCommonFilms(int userId, int friendId) {
+    public Collection<Film> findCommonFilms(int userId, int friendId) {
         return null;
     }
 

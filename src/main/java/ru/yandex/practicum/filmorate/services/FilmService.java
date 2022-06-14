@@ -99,7 +99,19 @@ public class FilmService {
     /**
      * Получение общих фильмов друзей
      */
-    public Collection<Film> getCommonFilms(int userId, int friendId) {
-        return storage.getCommonFilms(userId, friendId);
+    public Collection<Film> findCommonFilms(int userId, int friendId) throws ModelNotFoundException {
+        if(userService.findById(userId) == null) {
+            String message = String.format("Пользователь с id %d не найден", userId);
+
+            log.warn("findCommonFilms. {}", message);
+            throw new ModelNotFoundException(message);
+        }
+        if(userService.findById(friendId) == null) {
+            String message = String.format("Пользователь с id %d не найден", friendId);
+
+            log.warn("findCommonFilms. {}", message);
+            throw new ModelNotFoundException(message);
+        }
+        return storage.findCommonFilms(userId, friendId);
     }
 }

@@ -301,7 +301,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> getCommonFilms(int userId, int friendId) {
+    public Collection<Film> findCommonFilms(int userId, int friendId) {
         String sqlQuery = "SELECT f.id, f.name as film_name, f.description," +
                 "f.release_date, f.duration, f.mpa_id, m.name as mpa_name" +
                 " FROM film f " +

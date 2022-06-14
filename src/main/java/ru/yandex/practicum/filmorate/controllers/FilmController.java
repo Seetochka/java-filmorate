@@ -90,8 +90,9 @@ public class FilmController {
     }
 
     @GetMapping("/common")
-    public Collection<Film> getCommonFilms(@RequestParam int userId, @RequestParam int friendId) {
-        return service.getCommonFilms(userId, friendId);
+    public Collection<Film> findCommonFilms(@RequestParam int userId,
+                                            @RequestParam int friendId) throws ModelNotFoundException {
+        return service.findCommonFilms(userId, friendId);
     }
 
     private String getStringErrors(BindingResult bindingResult) {

@@ -130,7 +130,7 @@ class FilmDbStorageTest {
 
     @Test
     void testFindCommonFilms() {
-        Collection<Film> commonFilms = filmStorage.getCommonFilms(1,2);
+        Collection<Film> commonFilms = filmStorage.findCommonFilms(1,2);
 
         assertThat(commonFilms).hasSize(1);
         assertThat(filmStorage.findById(2).get().getId()).isEqualTo(2);
