@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.rewie;
+package ru.yandex.practicum.filmorate.storage.review;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +19,7 @@ import java.util.Optional;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class ReviewDbStorage implements ReviewStorage{
+public class ReviewDbStorage implements ReviewStorage {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -128,7 +128,7 @@ public class ReviewDbStorage implements ReviewStorage{
 
     @Override
     public void deleteReview(int id) {
-        String sqlQuery ="DELETE FROM review WHERE id = ?";
+        String sqlQuery = "DELETE FROM review WHERE id = ?";
         try {
             jdbcTemplate.update(sqlQuery, id);
         } catch (Exception e) {

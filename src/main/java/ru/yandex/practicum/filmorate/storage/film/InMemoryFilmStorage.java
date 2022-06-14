@@ -3,10 +3,7 @@ package ru.yandex.practicum.filmorate.storage.film;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.models.Film;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -28,6 +25,11 @@ public class InMemoryFilmStorage implements FilmStorage {
         films.put(film.getId(), film);
 
         return film;
+    }
+
+    @Override
+    public void deleteFilm(int id) {
+        films.remove(id);
     }
 
     /**
@@ -82,12 +84,22 @@ public class InMemoryFilmStorage implements FilmStorage {
      * Получение переданного количества популярных фильмов
      */
     @Override
-    public Collection<Film> findPopularFilms(int count) {
+    public Collection<Film> findPopularFilms(int count, Optional<Integer> genreId, Optional<Integer> year) {
         return films.values()
                 .stream()
                 .sorted(Comparator.comparingInt(Film::getCountLikes).reversed())
                 .limit(count)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<Film> findFilmsByTitleAndDirector(String query, String by) {
+        return null;
+    }
+
+    @Override
+    public Collection<Film> findFilmsByDirector(long directorId, String sortBy) {
+        return null;
     }
 
     private static Integer getNextId() {

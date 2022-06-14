@@ -16,6 +16,11 @@ public interface FilmStorage {
     Film saveFilm(Film film);
 
     /**
+     * Удаление фильма
+     */
+    void deleteFilm(int id);
+
+    /**
      * Получение фильма
      */
     Optional<Film> findById(int id);
@@ -28,7 +33,7 @@ public interface FilmStorage {
     /**
      * Обновление фильма
      */
-    Film updateFilm(Film film);
+    Film updateFilm(Film film) throws ModelNotFoundException;
 
     /**
      * Сохранение лайка
@@ -43,5 +48,16 @@ public interface FilmStorage {
     /**
      * Получение переданного количества популярных фильмов
      */
-    Collection<Film> findPopularFilms(int count);
+    Collection<Film> findPopularFilms(int count, Optional<Integer> genreId, Optional<Integer> year);
+
+
+    /**
+     * Поиск фильма по содержащейся строке в названии фильма
+     */
+    Collection<Film> findFilmsByTitleAndDirector(String query, String by);
+
+    /**
+     * Получение списка фильмов по id режиссёра
+     */
+    Collection<Film> findFilmsByDirector(long directorId, String sortBy);
 }

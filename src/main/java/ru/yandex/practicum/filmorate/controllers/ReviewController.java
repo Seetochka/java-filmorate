@@ -72,32 +72,32 @@ public class ReviewController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteReview(@PathVariable("id") int reviewID) throws ModelNotFoundException {
-        service.deleteFilm(reviewID);
+    public void deleteReview(@PathVariable("id") int reviewId) throws ModelNotFoundException {
+        service.deleteFilm(reviewId);
     }
 
     @PutMapping("/{id}/like/{userId}")
-    public void putLikeReview(@PathVariable("id") int reviewID, @PathVariable("userId") int userId)
+    public void putLikeReview(@PathVariable("id") int reviewId, @PathVariable("userId") int userId)
             throws ModelNotFoundException {
-        service.putLikeReview(reviewID, userId);
+        service.putLikeReview(reviewId, userId);
     }
 
     @PutMapping("/{id}/dislike/{userId}")
-    public void putDislikeReview(@PathVariable("id") int reviewID, @PathVariable("userId") int userId)
+    public void putDislikeReview(@PathVariable("id") int reviewId, @PathVariable("userId") int userId)
             throws ModelNotFoundException {
-        service.putDislikeReview(reviewID, userId);
+        service.putDislikeReview(reviewId, userId);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
-    public void deleteLikeReview(@PathVariable("id") int reviewID, @PathVariable("userId") int userId)
+    public void deleteLikeReview(@PathVariable("id") int reviewId, @PathVariable("userId") int userId)
             throws ModelNotFoundException {
-        service.deleteLikeReview(reviewID, userId);
+        service.deleteLikeReview(reviewId, userId);
     }
 
     @DeleteMapping("/{id}/dislike/{userId}")
-    public void deleteDislikeReview(@PathVariable("id") int reviewID, @PathVariable("userId") int userId)
+    public void deleteDislikeReview(@PathVariable("id") int reviewId, @PathVariable("userId") int userId)
             throws ModelNotFoundException {
-        service.deleteDislikeReview(reviewID, userId);
+        service.deleteDislikeReview(reviewId, userId);
     }
 
     private String getStringErrors(BindingResult bindingResult) {

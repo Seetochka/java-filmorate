@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.services;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.IncorrectParameterException;
@@ -7,7 +8,7 @@ import ru.yandex.practicum.filmorate.exceptions.ModelNotFoundException;
 import ru.yandex.practicum.filmorate.models.Event;
 import ru.yandex.practicum.filmorate.models.Review;
 import ru.yandex.practicum.filmorate.storage.likeReview.LikeReviewStorage;
-import ru.yandex.practicum.filmorate.storage.rewie.ReviewStorage;
+import ru.yandex.practicum.filmorate.storage.review.ReviewStorage;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -18,26 +19,13 @@ import java.util.Optional;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class ReviewService {
     private final ReviewStorage storage;
     private final FilmService filmService;
     private final LikeReviewStorage likeReviewStorage;
     private final EventService eventService;
-
     private final UserService userService;
-
-    public ReviewService(ReviewStorage storage,
-                         FilmService filmService,
-                         LikeReviewStorage likeReviewStorage,
-                         EventService eventService,
-                         UserService userService) {
-
-        this.storage = storage;
-        this.filmService = filmService;
-        this.likeReviewStorage = likeReviewStorage;
-        this.eventService = eventService;
-        this.userService = userService;
-    }
 
     /**
      * Сохранение отзыва
@@ -70,7 +58,6 @@ public class ReviewService {
      * Получение всех отзывов определённого фильма
      */
     public Collection<Review> findByFilmId(Optional<Integer> id, int count) throws ModelNotFoundException, IncorrectParameterException {
-
         if (count <= 0) {
             log.warn("FindByFilmId. Передан неверный параметр count {}", count);
             throw new IncorrectParameterException("count");
@@ -122,7 +109,7 @@ public class ReviewService {
         userService.findById(userId);
 
         if (status.isPresent()) {
-            if(!status.get()) {
+            if (!status.get()) {
                 likeReviewStorage.update(reviewId, userId, true);
                 review.setUseful(review.getUseful() + 2);
             }
@@ -142,7 +129,7 @@ public class ReviewService {
 
         Optional<Boolean> status = likeReviewStorage.getStatus(reviewId, userId);
         if (status.isPresent()) {
-            if(status.get()) {
+            if (status.get()) {
                 likeReviewStorage.update(reviewId, userId, false);
                 review.setUseful(review.getUseful() - 2);
             }
@@ -162,7 +149,7 @@ public class ReviewService {
 
         Optional<Boolean> status = likeReviewStorage.getStatus(reviewId, userId);
         if (status.isPresent()) {
-            if(status.get()) {
+            if (status.get()) {
                 likeReviewStorage.delete(reviewId, userId);
                 review.setUseful(review.getUseful() - 1);
             }
@@ -184,7 +171,7 @@ public class ReviewService {
 
         Optional<Boolean> status = likeReviewStorage.getStatus(reviewId, userId);
         if (status.isPresent()) {
-            if(!status.get()) {
+            if (!status.get()) {
                 likeReviewStorage.delete(reviewId, userId);
                 review.setUseful(review.getUseful() + 1);
             }
@@ -196,4 +183,3 @@ public class ReviewService {
         storage.updateReview(review);
     }
 }
-
