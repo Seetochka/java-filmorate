@@ -47,7 +47,7 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable("id") int userId) throws ModelNotFoundException {
-        service.deleteUser(userId);
+        userService.deleteUser(userId);
     }
 
     @GetMapping
