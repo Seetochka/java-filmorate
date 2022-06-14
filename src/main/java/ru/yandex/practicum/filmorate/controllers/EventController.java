@@ -10,15 +10,15 @@ import java.util.Collection;
 
 @RestController
 public class EventController {
-    private EventService eventService;
+    private final EventService eventService;
 
-    public EventController(EventService eventService){
+    public EventController(EventService eventService) {
         this.eventService = eventService;
     }
 
     //Возвращает ленту событий пользователя.
     @GetMapping("/users/{id}/feed")
-    public Collection<Event> getFeed(@PathVariable int id) throws Exception{
+    public Collection<Event> getFeed(@PathVariable int id) throws Exception {
         return eventService.getAllByUser(id);
     }
 }

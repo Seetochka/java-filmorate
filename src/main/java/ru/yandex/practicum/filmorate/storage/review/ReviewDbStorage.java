@@ -20,7 +20,6 @@ import java.util.Optional;
 @Slf4j
 @RequiredArgsConstructor
 public class ReviewDbStorage implements ReviewStorage {
-
     private final JdbcTemplate jdbcTemplate;
 
     @Override
@@ -57,6 +56,7 @@ public class ReviewDbStorage implements ReviewStorage {
     @Override
     public Optional<Review> findById(int id) {
         String sqlQuery = "SELECT id, content, is_positive, user_id, film_id, useful FROM review WHERE id = ?";
+
         try {
             Review review = jdbcTemplate.queryForObject(sqlQuery, this::mapRowToReview, id);
 
@@ -98,6 +98,7 @@ public class ReviewDbStorage implements ReviewStorage {
     public Collection<Review> findByFilmId(int id, int count) {
         String sqlQuery = "SELECT id, content, is_positive, user_id, film_id, useful FROM review WHERE film_id = ?" +
                 "ORDER BY useful DESC LIMIT ?";
+
         try {
             return jdbcTemplate.query(sqlQuery, this::mapRowToReview, id, count);
         } catch (EmptyResultDataAccessException e) {
@@ -112,7 +113,9 @@ public class ReviewDbStorage implements ReviewStorage {
 
     @Override
     public Collection<Review> findAll(int count) {
-        String sqlQuery = "SELECT id, content, is_positive, user_id, film_id, useful FROM review ORDER BY useful DESC LIMIT ?";
+        String sqlQuery = "SELECT id, content, is_positive, user_id, film_id, useful FROM review " +
+                "ORDER BY useful DESC LIMIT ?";
+
         try {
             return jdbcTemplate.query(sqlQuery, this::mapRowToReview, count);
         } catch (EmptyResultDataAccessException e) {
@@ -125,10 +128,10 @@ public class ReviewDbStorage implements ReviewStorage {
         }
     }
 
-
     @Override
     public void deleteReview(int id) {
         String sqlQuery = "DELETE FROM review WHERE id = ?";
+
         try {
             jdbcTemplate.update(sqlQuery, id);
         } catch (Exception e) {

@@ -15,7 +15,6 @@ import java.util.Optional;
 
 import static ru.yandex.practicum.filmorate.constants.Constant.*;
 
-
 /**
  * Сервис фильмов
  */
@@ -41,13 +40,13 @@ public class FilmService {
      * Сохранение фильма
      */
     public Film saveFilm(Film film) throws ModelNotFoundException {
-
         if (film.getDirectors() != null) {
             // проверяем что у фильма указан id существующего режиссёра
             for (Director director : film.getDirectors()) {
                 directorService.findDirectorById(director.getId());
             }
         }
+
         return storage.saveFilm(film);
     }
 
@@ -149,7 +148,7 @@ public class FilmService {
                 by.equals(TITLE_AND_DIRECTOR) || by.equals(DIRECTOR_AND_TITLE)) {
             return storage.findFilmsByTitleAndDirector(query, by);
         } else {
-            log.error("searchFilmsByTitleAndDirector. Передан неверный параметр by {}", by);
+            log.error("SearchFilmsByTitleAndDirector. Передан неверный параметр by {}", by);
             throw new IncorrectParameterException("by");
         }
     }
@@ -157,15 +156,15 @@ public class FilmService {
     /**
      * Получение списка фильмов по id режиссёра
      */
-    public Collection<Film> findFilmsByDirector(int directorId, String sortBy) throws IncorrectParameterException, ModelNotFoundException {
+    public Collection<Film> findFilmsByDirector(int directorId, String sortBy)
+            throws IncorrectParameterException, ModelNotFoundException {
         directorService.findDirectorById(directorId);
 
         if (sortBy.equals(LIKES) || sortBy.equals(YEAR)) {
             return storage.findFilmsByDirector(directorId, sortBy);
         } else {
-            log.error("findFilmsByDirector. Передан неверный параметр sortBy {}", sortBy);
+            log.error("FindFilmsByDirector. Передан неверный параметр sortBy {}", sortBy);
             throw new IncorrectParameterException("sortBy");
         }
-
     }
 }

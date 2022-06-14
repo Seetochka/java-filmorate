@@ -35,9 +35,9 @@ public class Film {
     @NotNull
     private Mpa mpa;
     private Collection<Genre> genres;
+    private Collection<Director> directors;
     @JsonIgnore
     private Set<Integer> likes = new TreeSet<>();
-    private Collection<Director> directors;
 
     /**
      * Сохранение лайка пользователя

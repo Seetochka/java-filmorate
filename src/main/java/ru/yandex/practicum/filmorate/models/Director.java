@@ -11,9 +11,7 @@ import javax.validation.constraints.NotNull;
 @Builder
 @Data
 public class Director {
-
     private int id;
     @NotNull
     private String name;
-
 }

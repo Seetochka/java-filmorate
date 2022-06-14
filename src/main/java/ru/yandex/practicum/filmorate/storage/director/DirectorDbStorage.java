@@ -18,15 +18,14 @@ import java.util.Optional;
 @Slf4j
 @Component
 public class DirectorDbStorage implements DirectorStorage {
-
     private final JdbcTemplate jdbcTemplate;
 
     public DirectorDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
     public Director saveDirector(Director director) {
-
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         String sqlAddDirector = "INSERT INTO director (name) VALUES (?)";
@@ -40,12 +39,14 @@ public class DirectorDbStorage implements DirectorStorage {
             director.setId(Objects.requireNonNull(keyHolder.getKey()).intValue());
         } catch (Exception e) {
             String message = "Не удалось добавить режиссёра и получить id";
-            log.error("saveAndReturnId. {}", message);
+            log.error("SaveAndReturnId. {}", message);
             throw new RuntimeException(message);
         }
+
         return director;
     }
 
+    @Override
     public Director updateDirector(Director director) {
         String sqlUpdDirector = "UPDATE director SET name = ? WHERE id = ?";
 
@@ -56,13 +57,14 @@ public class DirectorDbStorage implements DirectorStorage {
             return null;
         } catch (Exception e) {
             String message = "Не удалось получить режиссёра";
-            log.error("updateDirector. {}", message);
+            log.error("UpdateDirector. {}", message);
             throw new RuntimeException(message);
         }
 
         return director;
     }
 
+    @Override
     public void deleteDirector(int id) {
         String sqlDeleteDirector = "DELETE FROM director WHERE id = ?";
 
@@ -71,7 +73,7 @@ public class DirectorDbStorage implements DirectorStorage {
             log.info("Режиссёр с id {} удалён", id);
         } catch (Exception e) {
             String message = "Не удалось удалить режиссёра";
-            log.error("deleteDirector. {}", message);
+            log.error("DeleteDirector. {}", message);
             throw new RuntimeException(message);
         }
     }
@@ -79,6 +81,7 @@ public class DirectorDbStorage implements DirectorStorage {
     @Override
     public Collection<Director> findAllDirectors() {
         String sqlAllDirectors = "SELECT id, name FROM director";
+
         try {
             return jdbcTemplate.query(sqlAllDirectors, (rs, rowNum) -> makeDirector(rs));
         } catch (EmptyResultDataAccessException e) {
@@ -86,13 +89,15 @@ public class DirectorDbStorage implements DirectorStorage {
         } catch (Exception e) {
             String message = "Не удалось получить список режиссёров";
 
-            log.error("findAllDirectors. {}", message);
+            log.error("FindAllDirectors. {}", message);
             throw new RuntimeException(message);
         }
     }
 
+    @Override
     public Optional<Director> findDirectorById(int id) {
         String sqlDirectorById = "SELECT * FROM director WHERE id = ?";
+
         try {
             Director director = jdbcTemplate.queryForObject(sqlDirectorById, (rs, rowNum) -> makeDirector(rs), id);
             return Optional.ofNullable(director);
@@ -100,16 +105,19 @@ public class DirectorDbStorage implements DirectorStorage {
             return Optional.empty();
         } catch (Exception e) {
             String message = "Не удалось получить режиссёра по указанному id";
-            log.warn("getDirectorById. {}", message);
+
+            log.warn("FindDirectorById. {}", message);
             throw new RuntimeException(message);
         }
     }
 
+    @Override
     public Collection<Director> findDirectorsByFilmId(int filmId) {
         String sqlDirectorByFilmId = "SELECT d.id, d.name " +
                 "FROM director d " +
                 "INNER JOIN film_director fd ON d.id = fd.director_id " +
                 "WHERE fd.film_id = ?";
+
         try {
             return jdbcTemplate.query(sqlDirectorByFilmId, (rs, rowNum) -> makeDirector(rs), filmId);
         } catch (EmptyResultDataAccessException e) {
@@ -117,7 +125,7 @@ public class DirectorDbStorage implements DirectorStorage {
         } catch (Exception e) {
             String message = "Не удалось получить список режиссёров фильма";
 
-            log.error("findDirectorByFilmId. {}", message);
+            log.error("FindDirectorByFilmId. {}", message);
             throw new RuntimeException(message);
         }
     }

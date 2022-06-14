@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.constants;
 
 public class Constant {
-
     public final static String LIKES = "likes";
     public final static String YEAR = "year";
     public final static String TITLE = "title";

@@ -21,9 +21,7 @@ import static ru.yandex.practicum.filmorate.constants.Constant.LIKES;
 @Component
 @RequiredArgsConstructor
 public class DirectorService {
-
     private final DirectorDbStorage directorDbStorage;
-
     private final FilmDbStorage filmDbStorage;
 
     /**
@@ -52,9 +50,11 @@ public class DirectorService {
 
         List<Integer> filmsId = new ArrayList<>();
         filmsWithDirector.forEach(f -> filmsId.add(f.getId()));
+
         if (!filmsWithDirector.isEmpty()) {
             String message = "Режиссёра с id " + id + " удалить нельзя. Он указан в фильмах с id " + filmsId;
-            log.error("deleteDirector. {}", message);
+
+            log.error("DeleteDirector. {}", message);
             throw new ValidationException(message);
         }
 
@@ -72,16 +72,15 @@ public class DirectorService {
      * Получение режиссёра по Id
      */
     public Director findDirectorById(int id) throws ModelNotFoundException {
-
         Optional<Director> director = directorDbStorage.findDirectorById(id);
 
         director.orElseThrow(() -> {
             String message = String.format("Режиссёр с id %d не найден", id);
 
-            log.warn("findDirectorById. {}", message);
+            log.warn("FindDirectorById. {}", message);
             return new ModelNotFoundException(message);
         });
+
         return director.get();
     }
-
 }

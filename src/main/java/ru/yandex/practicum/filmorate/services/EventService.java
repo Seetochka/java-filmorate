@@ -12,27 +12,27 @@ import java.util.Collection;
  */
 @Service
 public class EventService {
-    private EventDBStorage eventStorage;
+    private final EventDBStorage eventStorage;
 
     /**
      * Конструктор сервиса
      */
     @Autowired
-    public EventService(EventDBStorage eventStorage){
+    public EventService(EventDBStorage eventStorage) {
         this.eventStorage = eventStorage;
     }
 
     /**
      * Получение списка всех событий пользователя
      */
-    public Collection<Event> getAllByUser(Integer userId) throws Exception{
+    public Collection<Event> getAllByUser(Integer userId) throws Exception {
         return eventStorage.getAllByUser(userId);
     }
 
     /**
      * Запись события
      */
-    public void saveEvent(Event event){
+    public void saveEvent(Event event) {
         eventStorage.saveEvent(event);
     }
 }

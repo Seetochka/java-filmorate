@@ -6,7 +6,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exceptions.ModelNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
+import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.models.User;
+import ru.yandex.practicum.filmorate.services.RecommendationService;
 import ru.yandex.practicum.filmorate.services.UserService;
 
 import javax.validation.Valid;
@@ -20,7 +22,8 @@ import java.util.Collection;
 @Slf4j
 @RequiredArgsConstructor
 public class UserController {
-    private final UserService service;
+    private final UserService userService;
+    private final RecommendationService recommendationService;
 
     @PostMapping
     public User saveUser(@Valid @RequestBody User user, BindingResult bindingResult) throws ValidationException {
@@ -31,7 +34,7 @@ public class UserController {
             throw new ValidationException(message);
         }
 
-        User createdUser = service.saveUser(user);
+        User createdUser = userService.saveUser(user);
 
         log.info("SaveUser. Пользователь с id {} успешно добавлен", user.getId());
         return createdUser;
@@ -39,17 +42,17 @@ public class UserController {
 
     @GetMapping("/{id}")
     public User findById(@PathVariable("id") int userId) throws ModelNotFoundException {
-        return service.findById(userId);
+        return userService.findById(userId);
     }
 
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable("id") int userId) throws ModelNotFoundException {
-        service.deleteUser(userId);
+        userService.deleteUser(userId);
     }
 
     @GetMapping
     public Collection<User> findAll() {
-        return service.findAll();
+        return userService.findAll();
     }
 
     @PutMapping
@@ -62,7 +65,7 @@ public class UserController {
             throw new ValidationException(message);
         }
 
-        User updatedUser = service.updateUser(user);
+        User updatedUser = userService.updateUser(user);
 
         log.info("UpdateUser. Данные пользователя с id {} успешно обновлены", user.getId());
         return updatedUser;
@@ -70,7 +73,7 @@ public class UserController {
 
     @PutMapping("/{id}/friends/{friendId}")
     public int saveFriend(@PathVariable("id") int userId, @PathVariable int friendId) throws ModelNotFoundException {
-        int countFriends = service.saveFriend(userId, friendId);
+        int countFriends = userService.saveFriend(userId, friendId);
 
         log.info("SaveFriend. Пользователь с id {} добавил в друзья пользователя с id {}", userId, friendId);
         return countFriends;
@@ -78,7 +81,7 @@ public class UserController {
 
     @DeleteMapping("/{id}/friends/{friendId}")
     public int deleteFriend(@PathVariable("id") int userId, @PathVariable int friendId) throws ModelNotFoundException {
-        int countFriends = service.deleteFriend(userId, friendId);
+        int countFriends = userService.deleteFriend(userId, friendId);
 
         log.info("DeleteFriend. Пользователь с id {} удалил из друзей пользователя с id {}", userId, friendId);
         return countFriends;
@@ -86,13 +89,18 @@ public class UserController {
 
     @GetMapping("/{id}/friends")
     public Collection<User> gerFriends(@PathVariable("id") int userId) throws ModelNotFoundException {
-        return service.findFriends(userId);
+        return userService.findFriends(userId);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
     public Collection<User> getCommonFriends(@PathVariable("id") int userId, @PathVariable("otherId") int otherUserId)
             throws ModelNotFoundException {
-        return service.findCommonFriends(userId, otherUserId);
+        return userService.findCommonFriends(userId, otherUserId);
+    }
+
+    @GetMapping("/{id}/recommendations")
+    public Collection<Film> getRecommendations(@PathVariable("id") int userId) {
+        return recommendationService.findRecommendations(userId);
     }
 
     private String getStringErrors(BindingResult bindingResult) {

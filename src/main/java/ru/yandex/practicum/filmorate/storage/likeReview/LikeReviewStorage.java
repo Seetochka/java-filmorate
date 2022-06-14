@@ -3,8 +3,6 @@ package ru.yandex.practicum.filmorate.storage.likeReview;
 import java.util.Optional;
 
 public interface LikeReviewStorage {
-
-
     /**
      * Поставить дизлайк
      */
@@ -16,12 +14,12 @@ public interface LikeReviewStorage {
     void delete(int reviewId, int userId);
 
     /**
-     *Проверить есть ли запись
+     * Проверить есть ли запись
      */
     Optional<Boolean> getStatus(int reviewId, int userId);
 
     /**
-     *Обновить запись
+     * Обновить запись
      */
     void update(int reviewId, int userId, boolean isLike);
 }
