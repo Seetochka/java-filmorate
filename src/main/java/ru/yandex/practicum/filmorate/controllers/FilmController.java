@@ -12,6 +12,7 @@ import ru.yandex.practicum.filmorate.services.FilmService;
 
 import javax.validation.Valid;
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Контроллер для работы с фильмами
@@ -72,6 +73,11 @@ public class FilmController {
         return countLikes;
     }
 
+    @DeleteMapping("/{id}")
+    public void deleteFilm(@PathVariable("id") int filmId) throws ModelNotFoundException {
+        service.deleteFilm(filmId);
+    }
+
     @DeleteMapping("/{id}/like/{userId}")
     public int deleteLike(@PathVariable("id") int filmId, @PathVariable int userId) throws ModelNotFoundException {
         int countLikes = service.deleteLike(filmId, userId);
@@ -81,9 +87,11 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public Collection<Film> findPopularFilms(@RequestParam(defaultValue = "10", required = false) Integer count)
+    public Collection<Film> findPopularFilms(@RequestParam(defaultValue = "10", required = false) Integer count,
+                                             @RequestParam(required = false) Optional<Integer> year,
+                                             @RequestParam(required = false) Optional<Integer> genreId)
             throws IncorrectParameterException {
-        return service.findPopularFilms(count);
+        return service.findPopularFilms(count, genreId, year);
     }
 
 

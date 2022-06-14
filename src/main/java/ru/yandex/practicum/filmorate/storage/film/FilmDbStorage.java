@@ -90,6 +90,19 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
+    public void deleteFilm(int id) {
+        String sqlQuery ="DELETE FROM film WHERE id = ?";
+        try {
+            jdbcTemplate.update(sqlQuery, id);
+        } catch (Exception e) {
+            String message = "Не удалось удалить фильм";
+
+            log.error("DeleteFilm. {}", message);
+            throw new RuntimeException(message);
+        }
+    }
+
+    @Override
     public Collection<Film> findAll() {
         String sqlQuery = "SELECT f.id, f.name as film_name, f.description, f.release_date, " +
                 "f.duration, f.mpa_id, m.name as mpa_name " +
@@ -182,18 +195,36 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> findPopularFilms(int count) {
+    public Collection<Film> findPopularFilms(int count, Optional<Integer> genreId, Optional<Integer> year) {
+        StringBuilder condition = new StringBuilder(" WHERE 1=1 ");
+        if (year.isPresent()) {
+            condition.append( " AND EXTRACT(YEAR FROM f.RELEASE_DATE) = ? ");
+        }
+        if(genreId.isPresent()) {
+            condition.append(" AND fg.GENRE_ID = ? ");
+        }
+
         String sqlQuery = "SELECT f.id, f.name as film_name, f.description, f.release_date, f.duration, " +
                 "f.mpa_id, m.name as mpa_name, COUNT(l.film_id) AS count_likes " +
                 "FROM film f " +
                 "LEFT JOIN mpa m ON f.mpa_id = m.id " +
                 "LEFT JOIN `like` l ON f.id = l.film_id " +
-                "GROUP BY f.id " +
+                "LEFT JOIN FILM_GENRE fg on f.id = fg.film_id " +
+                condition.toString() +
+                " GROUP BY f.id " +
                 "ORDER BY count_likes DESC " +
                 "LIMIT ?";
 
         try {
-            return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, count);
+            if(year.isPresent() && genreId.isPresent()){
+                return jdbcTemplate.query(sqlQuery, this::mapRowToFilm,  year.get(), genreId.get(), count);
+            } else if(year.isPresent()){
+                return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, year.get(), count);
+            } else if (genreId.isPresent()) {
+                return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, genreId.get(), count);
+            } else {
+                return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, count);
+            }
         } catch (EmptyResultDataAccessException e) {
             return null;
         } catch (Exception e) {
