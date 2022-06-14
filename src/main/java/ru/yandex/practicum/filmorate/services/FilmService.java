@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.exceptions.ModelNotFoundException;
 import ru.yandex.practicum.filmorate.models.Director;
+import ru.yandex.practicum.filmorate.models.Event;
 import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
@@ -24,11 +25,16 @@ public class FilmService {
     private final FilmStorage storage;
     private final UserService userService;
     private final DirectorService directorService;
+    private final EventService eventService;
 
-    public FilmService(@Qualifier("filmDbStorage") FilmStorage storage, UserService userService, DirectorService directorService) {
+    public FilmService(@Qualifier("FilmDbStorage") FilmStorage storage,
+                       UserService userService,
+                       DirectorService directorService,
+                       EventService eventService) {
         this.storage = storage;
         this.userService = userService;
         this.directorService = directorService;
+        this.eventService = eventService;
     }
 
     /**
@@ -99,8 +105,13 @@ public class FilmService {
     public int saveLike(int filmId, int userId) throws ModelNotFoundException {
         findById(filmId);
         userService.findById(userId);
-
-        return storage.saveLike(filmId, userId);
+        int ret = storage.saveLike(filmId, userId);
+        eventService.saveEvent(Event.builder()
+                                    .userId(userId)
+                                    .eventType("LIKE")
+                                    .operation("ADD")
+                                    .entityId(filmId).build());
+        return ret;
     }
 
     /**
@@ -109,8 +120,13 @@ public class FilmService {
     public int deleteLike(int filmId, int userId) throws ModelNotFoundException {
         findById(filmId);
         userService.findById(userId);
-
-        return storage.deleteLike(filmId, userId);
+        int ret = storage.deleteLike(filmId, userId);
+        eventService.saveEvent(Event.builder()
+                                    .userId(userId)
+                                    .eventType("LIKE")
+                                    .operation("REMOVE")
+                                    .entityId(filmId).build());
+        return ret;
     }
 
     /**

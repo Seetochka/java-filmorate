@@ -22,7 +22,7 @@ import java.util.*;
 
 import static ru.yandex.practicum.filmorate.constants.Constant.*;
 
-@Component
+@Component("FilmDbStorage")
 @Slf4j
 @RequiredArgsConstructor
 public class FilmDbStorage implements FilmStorage {
