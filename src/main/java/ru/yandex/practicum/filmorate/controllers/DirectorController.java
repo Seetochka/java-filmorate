@@ -73,7 +73,7 @@ public class DirectorController {
      */
     @DeleteMapping(value = {"/{id}"})
     @ResponseBody
-    public void deleteDirector(@PathVariable(required = false) int id) throws ModelNotFoundException, ValidationException {
+    public void deleteDirector(@PathVariable int id) throws ModelNotFoundException, ValidationException {
         directorService.deleteDirector(id);
 
     }
