@@ -27,7 +27,7 @@ public class FilmService {
     private final DirectorService directorService;
     private final EventService eventService;
 
-    public FilmService(@Qualifier("filmDbStorage") FilmStorage storage,
+    public FilmService(@Qualifier("FilmDbStorage") FilmStorage storage,
                        UserService userService,
                        DirectorService directorService,
                        EventService eventService) {
