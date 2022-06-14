@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import ru.yandex.practicum.filmorate.exceptions.ModelNotFoundException;
 import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.models.Mpa;
 import ru.yandex.practicum.filmorate.models.User;
@@ -63,13 +64,38 @@ class FilmDbStorageTest {
     }
 
     @Test
+    void testDeleteFilm() {
+        Film film = Film.builder()
+                .name("deleted film")
+                .description("description")
+                .releaseDate(LocalDate.now())
+                .duration(120)
+                .mpa(Mpa.builder().id(1).build())
+                .build();
+
+        film = filmStorage.saveFilm(film);
+
+        Collection<Film> films = filmStorage.findAll();
+        assertThat(films).hasSize(4);
+
+        filmStorage.deleteFilm(film.getId());
+
+        films = filmStorage.findAll();
+        assertThat(films).hasSize(3);
+
+        Optional<Film> deletedFilm = filmStorage.findById(film.getId());
+
+        assertThat(deletedFilm).isEmpty();
+    }
+
+    @Test
     void testFindAll() {
         Collection<Film> films = filmStorage.findAll();
         assertThat(films).hasSize(3);
     }
 
     @Test
-    void testUpdateFilm() {
+    void testUpdateFilm() throws ModelNotFoundException {
         Optional<Film> filmOptional = filmStorage.findById(2);
         assertThat(filmOptional).isPresent();
 

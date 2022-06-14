@@ -53,6 +53,30 @@ class UserDbStorageTest {
     }
 
     @Test
+    void testDeleteUser() {
+        User user = User.builder()
+                .email("delete_user")
+                .login("login-delete-user")
+                .name("name")
+                .birthday(LocalDate.now())
+                .build();
+
+        user = userStorage.saveUser(user);
+
+        Collection<User> users = userStorage.findAll();
+        assertThat(users).hasSize(5);
+
+        userStorage.deleteUser(user.getId());
+
+        users = userStorage.findAll();
+        assertThat(users).hasSize(4);
+
+        Optional<User> deletedUser = userStorage.findById(user.getId());
+
+        assertThat(deletedUser).isEmpty();
+    }
+
+    @Test
     void testFindAll() {
         Collection<User> users = userStorage.findAll();
         assertThat(users).hasSize(4);
