@@ -126,6 +126,7 @@ public class FilmController {
         return bindingResult.getFieldErrors()
                 .stream()
                 .map(element -> String.format("%s: %s; ", element.getField(), element.getDefaultMessage()))
-                .reduce("", (partialString, element) -> partialString + element);
+                .collect(StringBuilder::new, StringBuilder::append, StringBuilder::append)
+                .toString();
     }
 }
