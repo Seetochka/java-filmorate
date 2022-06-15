@@ -81,7 +81,10 @@ public class ReviewService {
      * Обновление отзыва
      */
     public Review updateReview(Review review) throws ModelNotFoundException {
-        findById(review.getId());
+        Review reviewGoted = findById(review.getId());
+        review.setUseful(reviewGoted.getUseful());
+        review.setUserId(reviewGoted.getUserId());
+        review.setFilmId(reviewGoted.getFilmId());
         Review ret = storage.updateReview(review);
         eventService.saveEvent(Event.builder()
                                     .userId(ret.getUserId())
