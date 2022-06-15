@@ -248,8 +248,7 @@ userId - id ппользователя, который хочет удалить
 "name": "director"
 }
 ```
-#### GET /films/director/{directorId}?sortBy=[year,likes] Возвращает список всех фильмов режиссёра, отсортированных по 
-количеству лайков или по годам.
+#### GET /films/director/{directorId}?sortBy=[year,likes] Возвращает список всех фильмов режиссёра, отсортированных по количеству лайков или по годам.
 
 ---
 ## add-search - 5 points
