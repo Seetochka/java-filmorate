@@ -325,6 +325,28 @@ public class FilmDbStorage implements FilmStorage {
             String message = "Не удалось посчитать количество жанров фильма";
 
             log.error("FindCountGenreForFilm. {}", message);
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    @Override
+    public Collection<Film> findCommonFilms(int userId, int friendId) {
+        String sqlQuery = "SELECT f.id, f.name as film_name, f.description," +
+                "f.release_date, f.duration, f.mpa_id, m.name as mpa_name" +
+                " FROM film f " +
+                "INNER JOIN mpa AS m ON f.mpa_id = m.id " +
+                "WHERE f.id IN (SELECT film_id " +
+                "              FROM `like` l " +
+                "              WHERE l.user_id = ?) " +
+                "AND f.id IN (SELECT film_id " +
+                "             FROM `like` l " +
+                "             WHERE l.user_id = ?)";
+        try {
+            return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, userId, friendId);
+        } catch (Exception e) {
+            String message = "Не удалось найти общие фильмы";
+
+            log.error("GetCommonFilms. {}", message);
             throw new RuntimeException(message);
         }
     }

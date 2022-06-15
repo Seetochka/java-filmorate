@@ -50,7 +50,6 @@ public interface FilmStorage {
      */
     Collection<Film> findPopularFilms(int count, Optional<Integer> genreId, Optional<Integer> year);
 
-
     /**
      * Поиск фильма по содержащейся строке в названии фильма
      */
@@ -60,4 +59,9 @@ public interface FilmStorage {
      * Получение списка фильмов по id режиссёра
      */
     Collection<Film> findFilmsByDirector(long directorId, String sortBy);
+
+    /**
+     * Получение общих фильмов друзей
+     */
+    Collection<Film> findCommonFilms(int userId, int friendId);
 }

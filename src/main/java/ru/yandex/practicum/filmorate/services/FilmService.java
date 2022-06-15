@@ -167,4 +167,14 @@ public class FilmService {
             throw new IncorrectParameterException("sortBy");
         }
     }
+
+    /**
+     * Получение общих фильмов друзей
+     */
+    public Collection<Film> findCommonFilms(int userId, int friendId) throws ModelNotFoundException {
+        userService.findById(userId);
+        userService.findById(friendId);
+
+        return storage.findCommonFilms(userId, friendId);
+    }
 }

@@ -116,6 +116,12 @@ public class FilmController {
         return service.findFilmsByDirector(directorId, sortBy);
     }
 
+    @GetMapping("/common")
+    public Collection<Film> findCommonFilms(@RequestParam int userId,
+                                            @RequestParam int friendId) throws ModelNotFoundException {
+        return service.findCommonFilms(userId, friendId);
+    }
+
     private String getStringErrors(BindingResult bindingResult) {
         return bindingResult.getFieldErrors()
                 .stream()
