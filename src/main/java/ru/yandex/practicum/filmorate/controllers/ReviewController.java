@@ -25,7 +25,7 @@ public class ReviewController {
     private final ReviewService service;
 
     @PostMapping
-    public Review saveReview(@Valid @RequestBody Review review, BindingResult bindingResult) throws ValidationException {
+    public Review saveReview(@Valid @RequestBody Review review, BindingResult bindingResult) throws ValidationException, ModelNotFoundException {
         if (bindingResult.hasErrors()) {
             String message = getStringErrors(bindingResult);
 
@@ -35,7 +35,7 @@ public class ReviewController {
 
         Review createdReview = service.saveReview(review);
 
-        log.info("SaveReview. Фильм с id {} успешно добавлен", review.getReviewId());
+        log.info("SaveReview. Фильм с id {} успешно добавлен", review.getId());
         return createdReview;
     }
 
@@ -63,7 +63,7 @@ public class ReviewController {
 
         Review updatedReview = service.updateReview(review);
 
-        log.info("UpdateReview. Отзыв с id {} успешно обновлен", review.getReviewId());
+        log.info("UpdateReview. Отзыв с id {} успешно обновлен", review.getId());
         return updatedReview;
     }
 

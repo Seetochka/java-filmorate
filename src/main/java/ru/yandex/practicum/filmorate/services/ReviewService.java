@@ -30,7 +30,13 @@ public class ReviewService {
     /**
      * Сохранение отзыва
      */
-    public Review saveReview(Review review) {
+    public Review saveReview(Review review) throws ModelNotFoundException {
+        userService.findById(review.getUserId());
+        filmService.findById(review.getFilmId());
+
+
+
+
         Review ret = storage.saveReview(review);
         eventService.saveEvent(Event.builder()
                                     .userId(ret.getUserId())
@@ -75,7 +81,7 @@ public class ReviewService {
      * Обновление отзыва
      */
     public Review updateReview(Review review) throws ModelNotFoundException {
-        findById(review.getReviewId());
+        findById(review.getId());
         Review ret = storage.updateReview(review);
         eventService.saveEvent(Event.builder()
                                     .userId(ret.getUserId())

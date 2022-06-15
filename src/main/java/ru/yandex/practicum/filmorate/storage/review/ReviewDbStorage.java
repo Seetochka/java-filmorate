@@ -39,7 +39,7 @@ public class ReviewDbStorage implements ReviewStorage {
                 return stmt;
             }, keyHolder);
 
-            review.setReviewId(
+            review.setId(
                     Objects.requireNonNull(keyHolder.getKey()).intValue()
             );
             review.setUseful(0);
@@ -83,7 +83,7 @@ public class ReviewDbStorage implements ReviewStorage {
                     review.getUserId(),
                     review.getFilmId(),
                     review.getUseful(),
-                    review.getReviewId());
+                    review.getId());
         } catch (Exception e) {
             String message = "Не удалось обновить данные обзора";
 
@@ -144,7 +144,7 @@ public class ReviewDbStorage implements ReviewStorage {
 
     private Review mapRowToReview(ResultSet resultSet, int i) throws SQLException {
         return Review.builder()
-                .reviewId(resultSet.getInt("id"))
+                .id(resultSet.getInt("id"))
                 .content(resultSet.getString("content"))
                 .userId(resultSet.getInt("user_id"))
                 .filmId(resultSet.getInt("film_id"))
