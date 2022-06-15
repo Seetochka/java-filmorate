@@ -67,7 +67,7 @@ class ReviewDbStorageTest {
                         assertThat(user).hasFieldOrPropertyWithValue("content", "So good")
                                 .hasFieldOrPropertyWithValue("useful", 0)
                 );
-        Review review = Review.builder().reviewId(1).isPositive(false).userId(1).filmId(1).content("So So good").build();
+        Review review = Review.builder().id(1).isPositive(false).userId(1).filmId(1).content("So So good").build();
         storage.updateReview(review);
         reviewOptional = storage.findById(1);
         assertThat(reviewOptional)

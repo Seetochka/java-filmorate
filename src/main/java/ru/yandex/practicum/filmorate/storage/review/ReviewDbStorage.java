@@ -32,14 +32,14 @@ public class ReviewDbStorage implements ReviewStorage {
             jdbcTemplate.update(connection -> {
                 PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"id"});
                 stmt.setString(1, review.getContent());
-                stmt.setBoolean(2, review.isPositive());
+                stmt.setBoolean(2, review.getIsPositive());
                 stmt.setInt(3, review.getUserId());
                 stmt.setInt(4, review.getFilmId());
                 stmt.setInt(5, 0);
                 return stmt;
             }, keyHolder);
 
-            review.setReviewId(
+            review.setId(
                     Objects.requireNonNull(keyHolder.getKey()).intValue()
             );
             review.setUseful(0);
@@ -79,11 +79,11 @@ public class ReviewDbStorage implements ReviewStorage {
         try {
             jdbcTemplate.update(sqlQuery,
                     review.getContent(),
-                    review.isPositive(),
+                    review.getIsPositive(),
                     review.getUserId(),
                     review.getFilmId(),
                     review.getUseful(),
-                    review.getReviewId());
+                    review.getId());
         } catch (Exception e) {
             String message = "Не удалось обновить данные обзора";
 
@@ -97,7 +97,7 @@ public class ReviewDbStorage implements ReviewStorage {
     @Override
     public Collection<Review> findByFilmId(int id, int count) {
         String sqlQuery = "SELECT id, content, is_positive, user_id, film_id, useful FROM review WHERE film_id = ?" +
-                "ORDER BY useful DESC LIMIT ?";
+                "ORDER BY useful DESC, id LIMIT ?";
 
         try {
             return jdbcTemplate.query(sqlQuery, this::mapRowToReview, id, count);
@@ -144,7 +144,7 @@ public class ReviewDbStorage implements ReviewStorage {
 
     private Review mapRowToReview(ResultSet resultSet, int i) throws SQLException {
         return Review.builder()
-                .reviewId(resultSet.getInt("id"))
+                .id(resultSet.getInt("id"))
                 .content(resultSet.getString("content"))
                 .userId(resultSet.getInt("user_id"))
                 .filmId(resultSet.getInt("film_id"))

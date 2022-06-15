@@ -10,16 +10,16 @@ import javax.validation.constraints.NotNull;
 @Data
 @Builder
 public class Review {
-    private int reviewId;
+    private int id;
     @NotNull
     @NotBlank
     private String content;
     @NotNull
     @JsonProperty("isPositive")
-    private boolean isPositive;
+    private Boolean isPositive;
     @NotNull
-    private int userId;
+    private Integer userId;
     @NotNull
-    private int filmId;
+    private Integer filmId;
     private int useful;
 }
