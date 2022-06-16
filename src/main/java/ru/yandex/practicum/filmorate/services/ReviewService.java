@@ -73,7 +73,6 @@ public class ReviewService {
             filmService.findById(id.get());
             return storage.findByFilmId(id.get(), count);
         }
-
         return storage.findAll(count);
     }
 
@@ -112,20 +111,19 @@ public class ReviewService {
      * Поставить лайк отзыву
      */
     public void putLikeReview(int reviewId, int userId) throws ModelNotFoundException {
-        Optional<Boolean> status = likeReviewStorage.getStatus(reviewId, userId);
-
         Review review = findById(reviewId);
         userService.findById(userId);
 
-        if (status.isPresent()) {
-            if (!status.get()) {
+        Optional<Boolean> status = likeReviewStorage.getStatus(reviewId, userId);
+        status.ifPresentOrElse((value) -> {
+            if (!value) {
                 likeReviewStorage.update(reviewId, userId, true);
                 review.setUseful(review.getUseful() + 2);
             }
-        } else {
+        }, () -> {
             likeReviewStorage.put(reviewId, userId, true);
             review.setUseful(review.getUseful() + 1);
-        }
+        });
 
         storage.updateReview(review);
     }
@@ -138,16 +136,15 @@ public class ReviewService {
         userService.findById(userId);
 
         Optional<Boolean> status = likeReviewStorage.getStatus(reviewId, userId);
-
-        if (status.isPresent()) {
-            if (status.get()) {
+        status.ifPresentOrElse((value) -> {
+            if (value) {
                 likeReviewStorage.update(reviewId, userId, false);
                 review.setUseful(review.getUseful() - 2);
             }
-        } else {
+        }, () -> {
             likeReviewStorage.put(reviewId, userId, false);
             review.setUseful(review.getUseful() - 1);
-        }
+        });
 
         storage.updateReview(review);
     }
@@ -160,17 +157,9 @@ public class ReviewService {
         userService.findById(userId);
 
         Optional<Boolean> status = likeReviewStorage.getStatus(reviewId, userId);
-
-        if (status.isPresent()) {
-            if (status.get()) {
-                likeReviewStorage.delete(reviewId, userId);
-                review.setUseful(review.getUseful() - 1);
-            }
-        } else {
-            String message = "Лайк не существует";
-
-            log.error("DeleteLikeReview. {}", message);
-            throw new ModelNotFoundException(message);
+        if (status.orElseThrow(() -> new ModelNotFoundException("Лайк не существует"))) {
+            likeReviewStorage.delete(reviewId, userId);
+            review.setUseful(review.getUseful() - 1);
         }
 
         storage.updateReview(review);
@@ -184,16 +173,9 @@ public class ReviewService {
         userService.findById(userId);
 
         Optional<Boolean> status = likeReviewStorage.getStatus(reviewId, userId);
-
-        if (status.isPresent()) {
-            if (!status.get()) {
-                likeReviewStorage.delete(reviewId, userId);
-                review.setUseful(review.getUseful() + 1);
-            }
-        } else {
-            String message = "Дизлайк не существует";
-            log.error("DeleteLikeReview. {}", message);
-            throw new ModelNotFoundException(message);
+        if (status.orElseThrow(() -> new ModelNotFoundException("Дизлайк не существует"))) {
+            likeReviewStorage.delete(reviewId, userId);
+            review.setUseful(review.getUseful() + 1);
         }
 
         storage.updateReview(review);
