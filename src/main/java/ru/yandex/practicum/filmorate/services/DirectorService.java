@@ -2,7 +2,7 @@ package ru.yandex.practicum.filmorate.services;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.ModelNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.models.Director;
@@ -15,10 +15,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import static ru.yandex.practicum.filmorate.constants.Constant.LIKES;
+import static ru.yandex.practicum.filmorate.constants.Constants.LIKES;
 
 @Slf4j
-@Component
+@Service
 @RequiredArgsConstructor
 public class DirectorService {
     private final DirectorDbStorage directorDbStorage;
@@ -35,6 +35,12 @@ public class DirectorService {
      * Обновление данных режиссёра
      */
     public Director updateDirector(Director director) throws ModelNotFoundException {
+        if (director.getId() == 0) {
+            String message = "Не казан id режиссёра";
+
+            log.warn("FindDirectorById. {}", message);
+            throw new NullPointerException(message);
+        }
         findDirectorById(director.getId());
 
         return directorDbStorage.updateDirector(director);

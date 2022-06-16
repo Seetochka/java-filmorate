@@ -20,7 +20,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
-import static ru.yandex.practicum.filmorate.constants.Constant.*;
+import static ru.yandex.practicum.filmorate.constants.Constants.*;
 
 @Component("FilmDbStorage")
 @Slf4j
@@ -214,7 +214,7 @@ public class FilmDbStorage implements FilmStorage {
                 "LEFT JOIN mpa m ON f.mpa_id = m.id " +
                 "LEFT JOIN `like` l ON f.id = l.film_id " +
                 "LEFT JOIN FILM_GENRE fg on f.id = fg.film_id " +
-                condition.toString() +
+                condition +
                 " GROUP BY f.id " +
                 "ORDER BY count_likes DESC " +
                 "LIMIT ?";
