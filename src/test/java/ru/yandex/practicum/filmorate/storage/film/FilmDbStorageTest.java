@@ -145,6 +145,7 @@ class FilmDbStorageTest {
 
         filmStorage.saveLike(1, 1);
         filmStorage.saveLike(1, 2);
+        filmStorage.saveLike(1, 3);
 
         Collection<Film> popularFilms = filmStorage.findPopularFilms(2, Optional.empty(), Optional.empty());
 
