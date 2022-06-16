@@ -6,7 +6,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exceptions.ModelNotFoundException;
 import ru.yandex.practicum.filmorate.models.Event;
 
@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 @Slf4j
-@Repository
+@Component
 @RequiredArgsConstructor
 public class EventDBStorage implements EventStorage {
     private final JdbcTemplate jdbcTemplate;
