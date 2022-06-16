@@ -13,7 +13,7 @@ import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import java.util.Collection;
 import java.util.Optional;
 
-import static ru.yandex.practicum.filmorate.constants.Constant.*;
+import static ru.yandex.practicum.filmorate.constants.Constants.*;
 
 /**
  * Сервис фильмов
@@ -106,10 +106,10 @@ public class FilmService {
         userService.findById(userId);
         int ret = storage.saveLike(filmId, userId);
         eventService.saveEvent(Event.builder()
-                                    .userId(userId)
-                                    .eventType("LIKE")
-                                    .operation("ADD")
-                                    .entityId(filmId).build());
+                .userId(userId)
+                .eventType("LIKE")
+                .operation("ADD")
+                .entityId(filmId).build());
         return ret;
     }
 
@@ -121,10 +121,10 @@ public class FilmService {
         userService.findById(userId);
         int ret = storage.deleteLike(filmId, userId);
         eventService.saveEvent(Event.builder()
-                                    .userId(userId)
-                                    .eventType("LIKE")
-                                    .operation("REMOVE")
-                                    .entityId(filmId).build());
+                .userId(userId)
+                .eventType("LIKE")
+                .operation("REMOVE")
+                .entityId(filmId).build());
         return ret;
     }
 
