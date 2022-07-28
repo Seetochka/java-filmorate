@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.ModelNotFoundException;
+import ru.yandex.practicum.filmorate.models.Event;
 import ru.yandex.practicum.filmorate.models.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -17,9 +18,12 @@ import java.util.Optional;
 @Slf4j
 public class UserService {
     private final UserStorage storage;
+    private final EventService eventService;
 
-    public UserService(@Qualifier("userDbStorage") UserStorage storage) {
+    public UserService(@Qualifier("UserDbStorage") UserStorage storage,
+                       EventService eventService) {
         this.storage = storage;
+        this.eventService = eventService;
     }
 
     /**
@@ -50,6 +54,15 @@ public class UserService {
     }
 
     /**
+     * Удаление пользователя
+     */
+    public void deleteUser(int id) throws ModelNotFoundException {
+        findById(id);
+
+        storage.deleteUser(id);
+    }
+
+    /**
      * Получение всех пользователей
      */
     public Collection<User> findAll() {
@@ -71,8 +84,13 @@ public class UserService {
     public int saveFriend(int userId, int friendId) throws ModelNotFoundException {
         findById(userId);
         findById(friendId);
-
-        return storage.saveFriend(userId, friendId);
+        int ret = storage.saveFriend(userId, friendId);
+        eventService.saveEvent(Event.builder()
+                                    .userId(userId)
+                                    .eventType("FRIEND")
+                                    .operation("ADD")
+                                    .entityId(friendId).build());
+        return ret;
     }
 
     /**
@@ -81,8 +99,13 @@ public class UserService {
     public int deleteFriend(int userId, int friendId) throws ModelNotFoundException {
         findById(userId);
         findById(friendId);
-
-        return storage.deleteFriend(userId, friendId);
+        int ret = storage.deleteFriend(userId, friendId);
+        eventService.saveEvent(Event.builder()
+                                    .userId(userId)
+                                    .eventType("FRIEND")
+                                    .operation("REMOVE")
+                                    .entityId(friendId).build());
+        return ret;
     }
 
     /**

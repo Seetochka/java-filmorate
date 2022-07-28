@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.models.Mpa;
+import ru.yandex.practicum.filmorate.storage.mpa.MpaDbStorage;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -20,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 class FilmDbStorageTest {
     private final FilmDbStorage filmStorage;
+    private final MpaDbStorage mpaStorage;
 
     @Test
     void testSaveFilm() {
@@ -32,6 +34,10 @@ class FilmDbStorageTest {
                 .build();
 
         film = filmStorage.saveFilm(film);
+        Optional<Mpa> mpaOptional = mpaStorage.findById(2);
+        assertThat(mpaOptional).isPresent();
+        film.setMpa(mpaOptional.get());
+
         Optional<Film> filmOptional = filmStorage.findById(film.getId());
 
         assertThat(filmOptional).isPresent();
@@ -53,6 +59,31 @@ class FilmDbStorageTest {
                 .hasValueSatisfying(film ->
                         assertThat(film).hasFieldOrPropertyWithValue("description", "description")
                 );
+    }
+
+    @Test
+    void testDeleteFilm() {
+        Film film = Film.builder()
+                .name("deleted film")
+                .description("description")
+                .releaseDate(LocalDate.now())
+                .duration(120)
+                .mpa(Mpa.builder().id(1).build())
+                .build();
+
+        film = filmStorage.saveFilm(film);
+
+        Collection<Film> films = filmStorage.findAll();
+        assertThat(films).hasSize(4);
+
+        filmStorage.deleteFilm(film.getId());
+
+        films = filmStorage.findAll();
+        assertThat(films).hasSize(3);
+
+        Optional<Film> deletedFilm = filmStorage.findById(film.getId());
+
+        assertThat(deletedFilm).isEmpty();
     }
 
     @Test
@@ -85,7 +116,7 @@ class FilmDbStorageTest {
         filmStorage.saveLike(1, 1);
         filmStorage.saveLike(1, 2);
 
-        Collection<Film> popularFilms = filmStorage.findPopularFilms(1);
+        Collection<Film> popularFilms = filmStorage.findPopularFilms(1, Optional.empty(), Optional.empty());
 
         assertThat(popularFilms).hasSize(1);
         assertThat(popularFilms).contains(filmOptional.get());
@@ -99,7 +130,7 @@ class FilmDbStorageTest {
         filmStorage.deleteLike(1, 1);
         filmStorage.deleteLike(1, 2);
 
-        Collection<Film> popularFilms = filmStorage.findPopularFilms(1);
+        Collection<Film> popularFilms = filmStorage.findPopularFilms(1, Optional.empty(), Optional.empty());
 
         assertThat(popularFilms).hasSize(1);
         assertThat(popularFilms).doesNotContain(filmOptional.get());
@@ -107,17 +138,26 @@ class FilmDbStorageTest {
 
     @Test
     void testFindPopularFilms() {
-        Optional<Film> filmOptional1 = filmStorage.findById(3);
-        Optional<Film> filmOptional2 = filmStorage.findById(1);
+        Optional<Film> filmOptional1 = filmStorage.findById(1);
+        Optional<Film> filmOptional2 = filmStorage.findById(2);
         assertThat(filmOptional1).isPresent();
         assertThat(filmOptional2).isPresent();
 
-        filmStorage.saveLike(3, 1);
-        filmStorage.saveLike(3, 2);
+        filmStorage.saveLike(1, 1);
+        filmStorage.saveLike(1, 2);
+        filmStorage.saveLike(1, 3);
 
-        Collection<Film> popularFilms = filmStorage.findPopularFilms(2);
+        Collection<Film> popularFilms = filmStorage.findPopularFilms(2, Optional.empty(), Optional.empty());
 
         assertThat(popularFilms).hasSize(2);
         assertThat(popularFilms).isEqualTo(List.of(filmOptional1.get(), filmOptional2.get()));
+    }
+
+    @Test
+    void testFindCommonFilms() {
+        Collection<Film> commonFilms = filmStorage.findCommonFilms(1,2);
+
+        assertThat(commonFilms).hasSize(2);
+        assertThat(filmStorage.findById(2).get().getId()).isEqualTo(2);
     }
 }

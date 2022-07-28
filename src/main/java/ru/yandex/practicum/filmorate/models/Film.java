@@ -6,8 +6,11 @@ import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 import ru.yandex.practicum.filmorate.validators.ReleaseDate;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -31,6 +34,8 @@ public class Film {
     private int duration;
     @NotNull
     private Mpa mpa;
+    private Collection<Genre> genres;
+    private Collection<Director> directors;
     @JsonIgnore
     private Set<Integer> likes = new TreeSet<>();
 

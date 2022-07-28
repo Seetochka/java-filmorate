@@ -6,16 +6,16 @@ import lombok.Builder;
 import lombok.Data;
 
 /**
- * Модель рейтинга
+ * Модель жанра
  */
 @Data
 @Builder
-public class Mpa {
+public class Genre {
     private int id;
     private String name;
 
     @JsonCreator
-    public Mpa(@JsonProperty("id") int id, @JsonProperty("name") String name) {
+    public Genre(@JsonProperty("id") int id, @JsonProperty("name") String name) {
         this.id = id;
         this.name = name;
     }

@@ -18,7 +18,7 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
 
-@Component
+@Component("UserDbStorage")
 @Slf4j
 @RequiredArgsConstructor
 public class UserDbStorage implements UserStorage {
@@ -61,12 +61,26 @@ public class UserDbStorage implements UserStorage {
             User user = jdbcTemplate.queryForObject(sqlQuery, this::mapRowToUser, id);
 
             return Optional.ofNullable(user);
-        }  catch (EmptyResultDataAccessException e) {
+        } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         } catch (Exception e) {
             String message = "Не удалось получить пользователя";
 
             log.error("FindUserById. {}", message);
+            throw new RuntimeException(message);
+        }
+    }
+
+    @Override
+    public void deleteUser(int id) {
+        String sqlQuery = "DELETE FROM user WHERE id = ?";
+
+        try {
+            jdbcTemplate.update(sqlQuery, id);
+        } catch (Exception e) {
+            String message = "Не удалось удалить пользователя";
+
+            log.error("DeleteUser. {}", message);
             throw new RuntimeException(message);
         }
     }
@@ -258,7 +272,7 @@ public class UserDbStorage implements UserStorage {
                 "WHERE (user_id = ?) OR (friend_id = ? AND status = 1)";
 
         try {
-            SqlRowSet countRows =  jdbcTemplate.queryForRowSet(sqlQuery, userId, userId);
+            SqlRowSet countRows = jdbcTemplate.queryForRowSet(sqlQuery, userId, userId);
 
             if (countRows.next()) {
                 return countRows.getInt("countFriends");

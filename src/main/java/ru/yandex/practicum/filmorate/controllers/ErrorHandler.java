@@ -46,4 +46,12 @@ public class ErrorHandler {
                 "Произошла непредвиденная ошибка"
         );
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleNullPointerException(final NullPointerException e) {
+        return new ErrorResponse(
+                e.getMessage()
+        );
+    }
 }
